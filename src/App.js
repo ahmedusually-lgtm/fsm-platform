@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  LayoutDashboard, ClipboardList, Users, MapPin, BarChart3, Settings, Bell, Search,
-  Plus, Filter, ChevronDown, ChevronRight, Calendar, Clock, AlertTriangle, CheckCircle,
-  XCircle, Wrench, Truck, Phone, Mail, Star, TrendingUp, TrendingDown, Activity,
-  Eye, Edit, Trash2, Download, Upload, RefreshCw, Menu, X, Globe, Moon, Sun,
-  ArrowRight, ArrowLeft, ChevronLeft, Home, User, LogOut, HelpCircle, FileText,
-  Zap, Target, Award, Briefcase, Shield, Layers, PieChart, Map, Lock, UserPlus,
-  Ticket, CalendarDays, CalendarCheck, UserCog, Key, AlertCircle
+  LayoutDashboard, ClipboardList, Users, BarChart3, Settings, Bell, Search,
+  Plus, ChevronRight, Clock, CheckCircle, Wrench, Truck, Phone, Star,
+  TrendingUp, TrendingDown, Activity, Eye, Edit, Menu, X, Globe, Moon, Sun,
+  User, LogOut, Briefcase, Shield, Layers, Ticket, CalendarDays, CalendarCheck,
+  AlertCircle, Car, Camera, MapPin, Gauge, AlertTriangle, Cpu, Zap, Navigation,
+  Video, Wifi, Battery, Route, ShieldCheck, Play, Signal, ChevronLeft, Radio
 } from "lucide-react";
 
 const translations = {
   ar: {
-    appName: "نظام إدارة الخدمات الميدانية",
+    appName: "روية AI",
+    appSubtitle: "منصة التليماتيكس الذكية",
     dashboard: "لوحة التحكم",
     workOrders: "أوامر العمل",
     technicians: "الفنيين",
     customers: "العملاء",
     tickets: "التذاكر",
     appointments: "المواعيد",
+    fleet: "إدارة الأسطول",
+    analytics: "التحليلات",
     reports: "التقارير",
     settings: "الإعدادات",
     search: "بحث...",
@@ -35,7 +37,6 @@ const translations = {
     medium: "متوسط",
     low: "منخفض",
     newOrder: "أمر عمل جديد",
-    filterBy: "تصفية حسب",
     allStatuses: "جميع الحالات",
     allPriorities: "جميع الأولويات",
     orderID: "رقم الأمر",
@@ -51,28 +52,20 @@ const translations = {
     offline: "غير متصل",
     rating: "التقييم",
     jobsCompleted: "المهام المنجزة",
-    specialization: "التخصص",
     recentActivity: "النشاط الأخير",
-    performance: "الأداء",
     weeklyOverview: "نظرة أسبوعية",
-    monthlyTrend: "الاتجاه الشهري",
     topTechnicians: "أفضل الفنيين",
     customerSatisfaction: "رضا العملاء",
     language: "اللغة",
-    theme: "المظهر",
     profile: "الملف الشخصي",
     logout: "تسجيل الخروج",
-    help: "المساعدة",
     viewAll: "عرض الكل",
     details: "التفاصيل",
     edit: "تعديل",
-    delete: "حذف",
     save: "حفظ",
     cancel: "إلغاء",
-    confirm: "تأكيد",
     close: "إغلاق",
     welcome: "مرحباً بك",
-    todaySchedule: "جدول اليوم",
     quickActions: "إجراءات سريعة",
     systemHealth: "صحة النظام",
     uptime: "وقت التشغيل",
@@ -82,44 +75,22 @@ const translations = {
     repair: "إصلاح",
     inspection: "فحص",
     minutes: "دقائق",
-    hours: "ساعات",
     noData: "لا توجد بيانات",
     orderDetails: "تفاصيل أمر العمل",
     description: "الوصف",
     location: "الموقع",
-    scheduledDate: "التاريخ المجدول",
-    estimatedDuration: "المدة المتوقعة",
-    notes: "ملاحظات",
-    addNote: "إضافة ملاحظة",
-    timeline: "الجدول الزمني",
-    created: "تم الإنشاء",
-    assigned: "تم التعيين",
-    started: "بدأ العمل",
-    title: "العنوان",
-    selectTechnician: "اختر فني",
-    selectPriority: "اختر الأولوية",
-    selectType: "اختر النوع",
     submit: "إرسال",
     createWorkOrder: "إنشاء أمر عمل",
     totalTechnicians: "إجمالي الفنيين",
-    onDuty: "في الخدمة",
-    offDuty: "خارج الخدمة",
-    completionRate: "معدل الإنجاز",
-    efficiency: "الكفاءة",
-    schedule: "الجدول",
-    map: "الخريطة",
     login: "تسجيل الدخول",
     register: "إنشاء حساب",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
     confirmPassword: "تأكيد كلمة المرور",
     fullName: "الاسم الكامل",
-    rememberMe: "تذكرني",
-    forgotPassword: "نسيت كلمة المرور؟",
     noAccount: "ليس لديك حساب؟",
     haveAccount: "لديك حساب بالفعل؟",
     loginError: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
-    registerSuccess: "تم إنشاء الحساب بنجاح",
     passwordMismatch: "كلمات المرور غير متطابقة",
     admin: "مدير النظام",
     user: "مستخدم",
@@ -127,14 +98,12 @@ const translations = {
     role: "الدور",
     users: "المستخدمين",
     manageUsers: "إدارة المستخدمين",
-    addUser: "إضافة مستخدم",
     ticketID: "رقم التذكرة",
     newTicket: "تذكرة جديدة",
     openTickets: "التذاكر المفتوحة",
     closedTickets: "التذاكر المغلقة",
     ticketSubject: "موضوع التذكرة",
     ticketDescription: "وصف المشكلة",
-    ticketStatus: "حالة التذكرة",
     open: "مفتوحة",
     closed: "مغلقة",
     resolved: "تم الحل",
@@ -146,25 +115,43 @@ const translations = {
     confirmed: "مؤكد",
     todayAppointments: "مواعيد اليوم",
     upcomingAppointments: "المواعيد القادمة",
-    pastAppointments: "المواعيد السابقة",
     consultation: "استشارة",
     siteVisit: "زيارة موقع",
     followUp: "متابعة",
     clientName: "اسم العميل",
     clientPhone: "رقم الهاتف",
     adminPanel: "لوحة الإدارة",
-    systemSettings: "إعدادات النظام",
     totalTickets: "إجمالي التذاكر",
-    totalAppointments: "إجمالي المواعيد"
+    totalAppointments: "إجمالي المواعيد",
+    darkMode: "الوضع الداكن",
+    lightMode: "الوضع الفاتح",
+    liveTracking: "التتبع المباشر",
+    aiAlerts: "تنبيهات AI",
+    vehicles: "المركبات",
+    drivers: "السائقين",
+    safetyScore: "نقاط السلامة",
+    activeVehicles: "المركبات النشطة",
+    totalDistance: "إجمالي المسافة",
+    fuelEfficiency: "كفاءة الوقود",
+    aiDetections: "اكتشافات AI",
+    speed: "السرعة",
+    fuel: "الوقود",
+    plateNumber: "رقم اللوحة",
+    specialization: "التخصص",
+    call: "اتصال",
+    assign: "تعيين"
   },
   en: {
-    appName: "Field Service Management",
+    appName: "Rooya AI",
+    appSubtitle: "Smart Telematics Platform",
     dashboard: "Dashboard",
     workOrders: "Work Orders",
     technicians: "Technicians",
     customers: "Customers",
     tickets: "Tickets",
     appointments: "Appointments",
+    fleet: "Fleet Management",
+    analytics: "Analytics",
     reports: "Reports",
     settings: "Settings",
     search: "Search...",
@@ -182,7 +169,6 @@ const translations = {
     medium: "Medium",
     low: "Low",
     newOrder: "New Work Order",
-    filterBy: "Filter by",
     allStatuses: "All Statuses",
     allPriorities: "All Priorities",
     orderID: "Order ID",
@@ -198,28 +184,20 @@ const translations = {
     offline: "Offline",
     rating: "Rating",
     jobsCompleted: "Jobs Completed",
-    specialization: "Specialization",
     recentActivity: "Recent Activity",
-    performance: "Performance",
     weeklyOverview: "Weekly Overview",
-    monthlyTrend: "Monthly Trend",
     topTechnicians: "Top Technicians",
     customerSatisfaction: "Customer Satisfaction",
     language: "Language",
-    theme: "Theme",
     profile: "Profile",
     logout: "Logout",
-    help: "Help",
     viewAll: "View All",
     details: "Details",
     edit: "Edit",
-    delete: "Delete",
     save: "Save",
     cancel: "Cancel",
-    confirm: "Confirm",
     close: "Close",
     welcome: "Welcome",
-    todaySchedule: "Today's Schedule",
     quickActions: "Quick Actions",
     systemHealth: "System Health",
     uptime: "Uptime",
@@ -229,44 +207,22 @@ const translations = {
     repair: "Repair",
     inspection: "Inspection",
     minutes: "minutes",
-    hours: "hours",
     noData: "No data available",
     orderDetails: "Work Order Details",
     description: "Description",
     location: "Location",
-    scheduledDate: "Scheduled Date",
-    estimatedDuration: "Estimated Duration",
-    notes: "Notes",
-    addNote: "Add Note",
-    timeline: "Timeline",
-    created: "Created",
-    assigned: "Assigned",
-    started: "Started",
-    title: "Title",
-    selectTechnician: "Select Technician",
-    selectPriority: "Select Priority",
-    selectType: "Select Type",
     submit: "Submit",
     createWorkOrder: "Create Work Order",
     totalTechnicians: "Total Technicians",
-    onDuty: "On Duty",
-    offDuty: "Off Duty",
-    completionRate: "Completion Rate",
-    efficiency: "Efficiency",
-    schedule: "Schedule",
-    map: "Map",
     login: "Login",
     register: "Register",
     email: "Email",
     password: "Password",
     confirmPassword: "Confirm Password",
     fullName: "Full Name",
-    rememberMe: "Remember me",
-    forgotPassword: "Forgot password?",
     noAccount: "Don't have an account?",
     haveAccount: "Already have an account?",
     loginError: "Invalid email or password",
-    registerSuccess: "Account created successfully",
     passwordMismatch: "Passwords do not match",
     admin: "Admin",
     user: "User",
@@ -274,14 +230,12 @@ const translations = {
     role: "Role",
     users: "Users",
     manageUsers: "Manage Users",
-    addUser: "Add User",
     ticketID: "Ticket ID",
     newTicket: "New Ticket",
     openTickets: "Open Tickets",
     closedTickets: "Closed Tickets",
     ticketSubject: "Ticket Subject",
     ticketDescription: "Problem Description",
-    ticketStatus: "Ticket Status",
     open: "Open",
     closed: "Closed",
     resolved: "Resolved",
@@ -293,122 +247,204 @@ const translations = {
     confirmed: "Confirmed",
     todayAppointments: "Today's Appointments",
     upcomingAppointments: "Upcoming Appointments",
-    pastAppointments: "Past Appointments",
     consultation: "Consultation",
     siteVisit: "Site Visit",
     followUp: "Follow Up",
     clientName: "Client Name",
     clientPhone: "Phone Number",
     adminPanel: "Admin Panel",
-    systemSettings: "System Settings",
     totalTickets: "Total Tickets",
-    totalAppointments: "Total Appointments"
+    totalAppointments: "Total Appointments",
+    darkMode: "Dark Mode",
+    lightMode: "Light Mode",
+    liveTracking: "Live Tracking",
+    aiAlerts: "AI Alerts",
+    vehicles: "Vehicles",
+    drivers: "Drivers",
+    safetyScore: "Safety Score",
+    activeVehicles: "Active Vehicles",
+    totalDistance: "Total Distance",
+    fuelEfficiency: "Fuel Efficiency",
+    aiDetections: "AI Detections",
+    speed: "Speed",
+    fuel: "Fuel",
+    plateNumber: "Plate Number",
+    specialization: "Specialization",
+    call: "Call",
+    assign: "Assign"
   }
 };
 
 const defaultUsers = [
-  { id: 1, email: "admin@fsm.com", password: "admin123", name: "مدير النظام", nameEn: "System Admin", role: "admin" },
-  { id: 2, email: "user@fsm.com", password: "user123", name: "محمد أحمد", nameEn: "Mohammed Ahmed", role: "user" },
-  { id: 3, email: "tech@fsm.com", password: "tech123", name: "خالد العمري", nameEn: "Khalid Al-Omari", role: "technician" }
+  { id: 1, email: "admin@rooya.ai", password: "admin123", name: "مدير النظام", nameEn: "System Admin", role: "admin" },
+  { id: 2, email: "user@rooya.ai", password: "user123", name: "محمد أحمد", nameEn: "Mohammed Ahmed", role: "user" },
+  { id: 3, email: "tech@rooya.ai", password: "tech123", name: "خالد العمري", nameEn: "Khalid Al-Omari", role: "technician" }
 ];
 
 const sampleTechnicians = [
-  { id: 1, name: "أحمد محمد", nameEn: "Ahmed Mohammed", status: "available", rating: 4.8, jobs: 156, spec: "تكييف", specEn: "HVAC", phone: "0501234567", avatar: "AM" },
-  { id: 2, name: "خالد العمري", nameEn: "Khalid Al-Omari", status: "onJob", rating: 4.6, jobs: 132, spec: "كهرباء", specEn: "Electrical", phone: "0507654321", avatar: "KA" },
-  { id: 3, name: "سعد الحربي", nameEn: "Saad Al-Harbi", status: "available", rating: 4.9, jobs: 189, spec: "سباكة", specEn: "Plumbing", phone: "0509876543", avatar: "SH" },
-  { id: 4, name: "فهد السالم", nameEn: "Fahd Al-Salem", status: "offline", rating: 4.3, jobs: 98, spec: "صيانة عامة", specEn: "General", phone: "0503456789", avatar: "FS" },
-  { id: 5, name: "عمر الدوسري", nameEn: "Omar Al-Dosari", status: "onJob", rating: 4.7, jobs: 145, spec: "تكييف", specEn: "HVAC", phone: "0502345678", avatar: "OD" }
+  { id: 1, name: "أحمد محمد", nameEn: "Ahmed Mohammed", status: "available", rating: 4.8, jobs: 156, spec: "تركيب كاميرات", specEn: "Camera Installation", phone: "0501234567", avatar: "AM" },
+  { id: 2, name: "خالد العمري", nameEn: "Khalid Al-Omari", status: "onJob", rating: 4.6, jobs: 132, spec: "صيانة GPS", specEn: "GPS Maintenance", phone: "0507654321", avatar: "KA" },
+  { id: 3, name: "سعد الحربي", nameEn: "Saad Al-Harbi", status: "available", rating: 4.9, jobs: 189, spec: "أنظمة التتبع", specEn: "Tracking Systems", phone: "0509876543", avatar: "SH" },
+  { id: 4, name: "فهد السالم", nameEn: "Fahd Al-Salem", status: "offline", rating: 4.3, jobs: 98, spec: "صيانة عامة", specEn: "General Maintenance", phone: "0503456789", avatar: "FS" },
+  { id: 5, name: "عمر الدوسري", nameEn: "Omar Al-Dosari", status: "onJob", rating: 4.7, jobs: 145, spec: "كاميرات AI", specEn: "AI Cameras", phone: "0502345678", avatar: "OD" }
 ];
 
 const sampleOrders = [
-  { id: "WO-2024-001", customer: "شركة الراجحي", customerEn: "Al Rajhi Corp", type: "maintenance", priority: "high", status: "inProgress", tech: 1, date: "2025-02-16", location: "الرياض - حي العليا", locationEn: "Riyadh - Olaya District", desc: "صيانة نظام التكييف المركزي", descEn: "Central AC system maintenance" },
-  { id: "WO-2024-002", customer: "مستشفى المملكة", customerEn: "Kingdom Hospital", type: "repair", priority: "urgent", status: "pending", tech: 3, date: "2025-02-16", location: "الرياض - طريق الملك فهد", locationEn: "Riyadh - King Fahd Road", desc: "عطل في نظام التبريد", descEn: "Cooling system failure" },
-  { id: "WO-2024-003", customer: "فندق الفيصلية", customerEn: "Al Faisaliah Hotel", type: "installation", priority: "medium", status: "completed", tech: 2, date: "2025-02-15", location: "الرياض - حي الفيصلية", locationEn: "Riyadh - Faisaliah District", desc: "تركيب وحدات تكييف جديدة", descEn: "New AC unit installation" },
-  { id: "WO-2024-004", customer: "مجمع العثيم", customerEn: "Othaim Mall", type: "inspection", priority: "low", status: "pending", tech: null, date: "2025-02-17", location: "الرياض - طريق خريص", locationEn: "Riyadh - Khurais Road", desc: "فحص دوري لأنظمة التكييف", descEn: "Routine HVAC inspection" },
-  { id: "WO-2024-005", customer: "برج المملكة", customerEn: "Kingdom Tower", type: "repair", priority: "high", status: "inProgress", tech: 5, date: "2025-02-16", location: "الرياض - طريق الملك فهد", locationEn: "Riyadh - King Fahd Road", desc: "إصلاح تسريب في نظام التبريد", descEn: "Cooling system leak repair" }
+  { id: "WO-2024-001", customer: "شركة أرامكو", customerEn: "Aramco Corp", type: "installation", priority: "high", status: "inProgress", tech: 1, date: "2025-02-17", location: "الرياض - حي العليا", locationEn: "Riyadh - Olaya District", desc: "تركيب 50 كاميرا AI للأسطول", descEn: "Install 50 AI cameras for fleet" },
+  { id: "WO-2024-002", customer: "شركة سابك", customerEn: "SABIC", type: "repair", priority: "urgent", status: "pending", tech: 3, date: "2025-02-17", location: "الجبيل الصناعية", locationEn: "Jubail Industrial", desc: "إصلاح نظام التتبع", descEn: "Repair tracking system" },
+  { id: "WO-2024-003", customer: "شركة الراجحي", customerEn: "Al Rajhi Company", type: "maintenance", priority: "medium", status: "completed", tech: 2, date: "2025-02-16", location: "الرياض - طريق الملك فهد", locationEn: "Riyadh - King Fahd Road", desc: "صيانة دورية للكاميرات", descEn: "Routine camera maintenance" },
+  { id: "WO-2024-004", customer: "شركة المراعي", customerEn: "Almarai", type: "inspection", priority: "low", status: "pending", tech: null, date: "2025-02-18", location: "الخرج", locationEn: "Al Kharj", desc: "فحص أنظمة التليماتيكس", descEn: "Telematics system inspection" },
+  { id: "WO-2024-005", customer: "أمانة الرياض", customerEn: "Riyadh Municipality", type: "installation", priority: "high", status: "inProgress", tech: 5, date: "2025-02-17", location: "الرياض - وسط المدينة", locationEn: "Riyadh - Downtown", desc: "تركيب نظام مراقبة الأسطول", descEn: "Fleet monitoring system installation" }
 ];
 
 const sampleTickets = [
-  { id: "TK-2024-001", subject: "مشكلة في التكييف", subjectEn: "AC Problem", customer: "أحمد سعيد", customerEn: "Ahmed Saeed", status: "open", priority: "high", date: "2025-02-16", desc: "التكييف لا يعمل بشكل صحيح", descEn: "AC not working properly" },
-  { id: "TK-2024-002", subject: "طلب صيانة دورية", subjectEn: "Routine Maintenance Request", customer: "شركة النور", customerEn: "Al Noor Company", status: "resolved", priority: "medium", date: "2025-02-15", desc: "نحتاج صيانة دورية للمكيفات", descEn: "Need routine AC maintenance" },
-  { id: "TK-2024-003", subject: "تسريب مياه", subjectEn: "Water Leak", customer: "فاطمة محمد", customerEn: "Fatima Mohammed", status: "open", priority: "urgent", date: "2025-02-16", desc: "يوجد تسريب مياه من المكيف", descEn: "Water leaking from AC unit" },
-  { id: "TK-2024-004", subject: "استفسار عن الأسعار", subjectEn: "Price Inquiry", customer: "مؤسسة الأمل", customerEn: "Al Amal Est.", status: "closed", priority: "low", date: "2025-02-14", desc: "نريد معرفة أسعار الصيانة السنوية", descEn: "Want to know annual maintenance prices" }
+  { id: "TK-2024-001", subject: "عطل في كاميرا AI", subjectEn: "AI Camera Malfunction", customer: "شركة أرامكو", customerEn: "Aramco", status: "open", priority: "high", date: "2025-02-17", desc: "الكاميرا لا تسجل", descEn: "Camera not recording" },
+  { id: "TK-2024-002", subject: "تحديث نظام التتبع", subjectEn: "Tracking System Update", customer: "شركة سابك", customerEn: "SABIC", status: "resolved", priority: "medium", date: "2025-02-16", desc: "طلب تحديث البرنامج", descEn: "Software update request" },
+  { id: "TK-2024-003", subject: "مشكلة في GPS", subjectEn: "GPS Issue", customer: "شركة المراعي", customerEn: "Almarai", status: "open", priority: "urgent", date: "2025-02-17", desc: "إشارة GPS ضعيفة", descEn: "Weak GPS signal" },
+  { id: "TK-2024-004", subject: "استفسار فني", subjectEn: "Technical Inquiry", customer: "أمانة الرياض", customerEn: "Riyadh Municipality", status: "closed", priority: "low", date: "2025-02-15", desc: "استفسار عن مواصفات الكاميرات", descEn: "Camera specifications inquiry" }
 ];
 
 const sampleAppointments = [
-  { id: "AP-2024-001", client: "محمد العتيبي", clientEn: "Mohammed Al-Otaibi", phone: "0551234567", type: "consultation", date: "2025-02-17", time: "09:00", status: "confirmed", location: "الرياض - حي النخيل", locationEn: "Riyadh - Nakheel District" },
-  { id: "AP-2024-002", client: "سارة أحمد", clientEn: "Sara Ahmed", phone: "0559876543", type: "siteVisit", date: "2025-02-17", time: "11:30", status: "scheduled", location: "الرياض - حي الملقا", locationEn: "Riyadh - Malqa District" },
-  { id: "AP-2024-003", client: "شركة التقنية", clientEn: "Tech Company", phone: "0112345678", type: "followUp", date: "2025-02-17", time: "14:00", status: "confirmed", location: "الرياض - حي الصحافة", locationEn: "Riyadh - Sahafa District" },
-  { id: "AP-2024-004", client: "عبدالله الشمري", clientEn: "Abdullah Al-Shammari", phone: "0554567890", type: "consultation", date: "2025-02-18", time: "10:00", status: "scheduled", location: "الرياض - حي الياسمين", locationEn: "Riyadh - Yasmin District" }
+  { id: "AP-2024-001", client: "شركة أرامكو", clientEn: "Aramco", phone: "0112345678", type: "siteVisit", date: "2025-02-17", time: "09:00", status: "confirmed", location: "الظهران", locationEn: "Dhahran" },
+  { id: "AP-2024-002", client: "شركة سابك", clientEn: "SABIC", phone: "0137654321", type: "consultation", date: "2025-02-17", time: "14:00", status: "scheduled", location: "الجبيل", locationEn: "Jubail" },
+  { id: "AP-2024-003", client: "أمانة الرياض", clientEn: "Riyadh Municipality", phone: "0114567890", type: "followUp", date: "2025-02-18", time: "11:00", status: "confirmed", location: "الرياض", locationEn: "Riyadh" },
+  { id: "AP-2024-004", client: "شركة المراعي", clientEn: "Almarai", phone: "0115678901", type: "siteVisit", date: "2025-02-19", time: "10:00", status: "scheduled", location: "الخرج", locationEn: "Al Kharj" }
 ];
 
-function StatusBadge({ status, t }) {
-  const config = {
-    pending: { bg: "bg-yellow-100", text: "text-yellow-800", label: t.pending },
-    inProgress: { bg: "bg-blue-100", text: "text-blue-800", label: t.inProgress },
-    completed: { bg: "bg-green-100", text: "text-green-800", label: t.completed },
-    cancelled: { bg: "bg-red-100", text: "text-red-800", label: t.cancelled },
-    open: { bg: "bg-orange-100", text: "text-orange-800", label: t.open },
-    closed: { bg: "bg-gray-100", text: "text-gray-800", label: t.closed },
-    resolved: { bg: "bg-green-100", text: "text-green-800", label: t.resolved },
-    scheduled: { bg: "bg-purple-100", text: "text-purple-800", label: t.scheduled },
-    confirmed: { bg: "bg-green-100", text: "text-green-800", label: t.confirmed }
-  };
-  const c = config[status] || { bg: "bg-gray-100", text: "text-gray-800", label: status };
-  return <span className={`${c.bg} ${c.text} px-2 py-1 rounded-full text-xs font-medium`}>{c.label}</span>;
+const fleetData = [
+  { id: "V-001", plate: "أ ب ج 1234", plateEn: "ABC 1234", driver: "أحمد", driverEn: "Ahmed", status: "active", speed: 85, location: "طريق الملك فهد", locationEn: "King Fahd Road", safetyScore: 92, fuel: 75 },
+  { id: "V-002", plate: "د ه و 5678", plateEn: "DEF 5678", driver: "محمد", driverEn: "Mohammed", status: "active", speed: 62, location: "طريق الملك عبدالله", locationEn: "King Abdullah Road", safetyScore: 88, fuel: 45 },
+  { id: "V-003", plate: "ز ح ط 9012", plateEn: "GHI 9012", driver: "خالد", driverEn: "Khalid", status: "idle", speed: 0, location: "موقف الشركة", locationEn: "Company Parking", safetyScore: 95, fuel: 90 },
+  { id: "V-004", plate: "ي ك ل 3456", plateEn: "JKL 3456", driver: "سعد", driverEn: "Saad", status: "alert", speed: 120, location: "الدائري الشرقي", locationEn: "Eastern Ring Road", safetyScore: 65, fuel: 30 }
+];
+
+function RooyaLogo({ size = "default", theme = "dark" }) {
+  const sizes = { small: "text-xl", default: "text-2xl", large: "text-4xl" };
+  const colors = theme === "dark" ? "text-white" : "text-gray-900";
+  return <div className={`font-black tracking-tight ${sizes[size]} ${colors}`}>rooya<span className="text-cyan-400">.</span></div>;
 }
 
-function PriorityBadge({ priority, t }) {
-  const config = {
-    urgent: { bg: "bg-red-100", text: "text-red-800", label: t.urgent, dot: "bg-red-500" },
-    high: { bg: "bg-orange-100", text: "text-orange-800", label: t.high, dot: "bg-orange-500" },
-    medium: { bg: "bg-yellow-100", text: "text-yellow-800", label: t.medium, dot: "bg-yellow-500" },
-    low: { bg: "bg-green-100", text: "text-green-800", label: t.low, dot: "bg-green-500" }
-  };
-  const c = config[priority] || { bg: "bg-gray-100", text: "text-gray-800", label: priority, dot: "bg-gray-500" };
+function PulsingDot({ color = "bg-cyan-400" }) {
   return (
-    <span className={`${c.bg} ${c.text} px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1`}>
-      <span className={`w-2 h-2 rounded-full ${c.dot}`}></span>{c.label}
+    <span className="relative flex h-3 w-3">
+      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${color} opacity-75`}></span>
+      <span className={`relative inline-flex rounded-full h-3 w-3 ${color}`}></span>
     </span>
   );
 }
 
-function StatCard({ icon: Icon, label, value, change, color, onClick }) {
+function GlowingCard({ children, className = "", glow = "cyan" }) {
+  const glowColors = { cyan: "hover:shadow-cyan-500/20", green: "hover:shadow-emerald-500/20", orange: "hover:shadow-orange-500/20", red: "hover:shadow-red-500/20" };
+  return <div className={`rounded-2xl transition-all duration-500 hover:shadow-2xl ${glowColors[glow]} ${className}`}>{children}</div>;
+}
+
+function AnimatedCounter({ value, duration = 1000 }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const end = parseInt(String(value).replace(/[^0-9]/g, '')) || 0;
+    if (start === end) { setCount(end); return; }
+    const timer = setInterval(() => {
+      start += Math.ceil(end / (duration / 50));
+      if (start >= end) { setCount(end); clearInterval(timer); }
+      else setCount(start);
+    }, 50);
+    return () => clearInterval(timer);
+  }, [value, duration]);
+  return <span>{count.toLocaleString()}</span>;
+}
+
+function CircularProgress({ value, size = 120, strokeWidth = 8, color = "#00D4FF" }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (value / 100) * circumference;
   return (
-    <div onClick={onClick} className={`bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all ${onClick ? "cursor-pointer hover:border-blue-200" : ""}`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${color}`}>
-          <Icon size={20} className="text-white" />
-        </div>
-        {change !== undefined && change !== null && (
-          <span className={`text-xs font-medium flex items-center gap-1 ${change > 0 ? "text-green-600" : "text-red-600"}`}>
-            {change > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            {Math.abs(change)}%
-          </span>
-        )}
-      </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{label}</p>
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg className="transform -rotate-90" width={size} height={size}>
+        <circle cx={size/2} cy={size/2} r={radius} stroke="currentColor" strokeWidth={strokeWidth} fill="none" className="text-gray-700" />
+        <circle cx={size/2} cy={size/2} r={radius} stroke={color} strokeWidth={strokeWidth} fill="none" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center"><span className="text-2xl font-bold text-white">{value}%</span></div>
     </div>
   );
 }
 
-function MiniBarChart({ data, color = "bg-blue-500" }) {
-  const max = Math.max(...data.map(d => d.v)) || 1;
+function StatusBadge({ status, t, theme }) {
+  const configs = {
+    pending: { bg: "bg-yellow-500/20", text: "text-yellow-400", label: t.pending },
+    inProgress: { bg: "bg-cyan-500/20", text: "text-cyan-400", label: t.inProgress },
+    completed: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: t.completed },
+    cancelled: { bg: "bg-red-500/20", text: "text-red-400", label: t.cancelled },
+    open: { bg: "bg-orange-500/20", text: "text-orange-400", label: t.open },
+    closed: { bg: "bg-gray-500/20", text: "text-gray-400", label: t.closed },
+    resolved: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: t.resolved },
+    scheduled: { bg: "bg-purple-500/20", text: "text-purple-400", label: t.scheduled },
+    confirmed: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: t.confirmed },
+    active: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: "Active" },
+    idle: { bg: "bg-gray-500/20", text: "text-gray-400", label: "Idle" },
+    alert: { bg: "bg-red-500/20", text: "text-red-400", label: "Alert" },
+    available: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: t.available },
+    onJob: { bg: "bg-cyan-500/20", text: "text-cyan-400", label: t.onJob },
+    offline: { bg: "bg-gray-500/20", text: "text-gray-400", label: t.offline }
+  };
+  const c = configs[status] || configs.pending;
+  const isDark = theme === "dark";
+  return <span className={`${isDark ? c.bg : "bg-gray-100"} ${isDark ? c.text : "text-gray-700"} px-3 py-1 rounded-full text-xs font-semibold`}>{c.label}</span>;
+}
+
+function PriorityBadge({ priority, t, theme }) {
+  const configs = {
+    urgent: { bg: "bg-red-500/20", text: "text-red-400", dot: "bg-red-500", label: t.urgent },
+    high: { bg: "bg-orange-500/20", text: "text-orange-400", dot: "bg-orange-500", label: t.high },
+    medium: { bg: "bg-yellow-500/20", text: "text-yellow-400", dot: "bg-yellow-500", label: t.medium },
+    low: { bg: "bg-emerald-500/20", text: "text-emerald-400", dot: "bg-emerald-500", label: t.low }
+  };
+  const c = configs[priority] || configs.medium;
+  const isDark = theme === "dark";
   return (
-    <div className="flex items-end gap-1 h-24">
+    <span className={`${isDark ? c.bg : "bg-gray-100"} ${isDark ? c.text : "text-gray-700"} px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2`}>
+      <span className={`w-2 h-2 rounded-full ${c.dot} ${priority === "urgent" ? "animate-pulse" : ""}`}></span>{c.label}
+    </span>
+  );
+}
+
+function StatCard({ icon: Icon, label, value, change, color, onClick, theme, glow = "cyan" }) {
+  const isDark = theme === "dark";
+  return (
+    <GlowingCard glow={glow} className={`${isDark ? "bg-gray-800/50 border-gray-700/50" : "bg-white border-gray-200"} border backdrop-blur-sm p-5 cursor-pointer`}>
+      <div onClick={onClick} className="h-full">
+        <div className="flex items-center justify-between mb-4">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}><Icon size={24} className="text-white" /></div>
+          {change !== undefined && (
+            <span className={`text-xs font-semibold flex items-center gap-1 ${change > 0 ? "text-emerald-400" : "text-red-400"}`}>
+              {change > 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}{Math.abs(change)}%
+            </span>
+          )}
+        </div>
+        <p className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}><AnimatedCounter value={value} /></p>
+        <p className={`text-sm mt-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>{label}</p>
+      </div>
+    </GlowingCard>
+  );
+}
+
+function MiniBarChart({ data, color = "bg-cyan-500", theme }) {
+  const max = Math.max(...data.map(d => d.v)) || 1;
+  const isDark = theme === "dark";
+  return (
+    <div className="flex items-end gap-2 h-32">
       {data.map((d, i) => (
-        <div key={i} className="flex flex-col items-center flex-1">
-          <div className={`w-full rounded-t ${color}`} style={{ height: `${Math.max((d.v / max) * 100, 5)}%` }}></div>
-          <span className="text-xs text-gray-400 mt-1">{d.l}</span>
+        <div key={i} className="flex flex-col items-center flex-1 group">
+          <div className={`w-full rounded-t-lg ${color} transition-all duration-300 group-hover:opacity-80`} style={{ height: `${Math.max((d.v / max) * 100, 8)}%` }}></div>
+          <span className={`text-xs mt-2 ${isDark ? "text-gray-500" : "text-gray-400"}`}>{d.l}</span>
         </div>
       ))}
     </div>
   );
 }
-
 export default function App() {
   const [lang, setLang] = useState("ar");
+  const [theme, setTheme] = useState("dark");
   const [page, setPage] = useState("login");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -419,7 +455,6 @@ export default function App() {
   const [orders, setOrders] = useState(sampleOrders);
   const [notifOpen, setNotifOpen] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState(defaultUsers);
@@ -431,14 +466,12 @@ export default function App() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirm, setRegisterConfirm] = useState("");
   const [registerError, setRegisterError] = useState("");
-  
   const [tickets, setTickets] = useState(sampleTickets);
   const [showNewTicket, setShowNewTicket] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [newTicketSubject, setNewTicketSubject] = useState("");
   const [newTicketDesc, setNewTicketDesc] = useState("");
   const [newTicketPriority, setNewTicketPriority] = useState("medium");
-  
   const [appointments, setAppointments] = useState(sampleAppointments);
   const [showNewAppointment, setShowNewAppointment] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -448,396 +481,186 @@ export default function App() {
   const [newApptTime, setNewApptTime] = useState("");
   const [newApptType, setNewApptType] = useState("consultation");
   const [newApptLocation, setNewApptLocation] = useState("");
-
   const [newCust, setNewCust] = useState("");
   const [newLoc, setNewLoc] = useState("");
-  const [newType, setNewType] = useState("maintenance");
+  const [newType, setNewType] = useState("installation");
   const [newPrio, setNewPrio] = useState("medium");
   const [newDesc, setNewDesc] = useState("");
 
   const t = translations[lang];
   const isRTL = lang === "ar";
   const dir = isRTL ? "rtl" : "ltr";
+  const isDark = theme === "dark";
+  const bgClass = isDark ? "bg-gray-900" : "bg-gray-50";
+  const cardBg = isDark ? "bg-gray-800/50 border-gray-700/50" : "bg-white border-gray-200";
+  const textPrimary = isDark ? "text-white" : "text-gray-900";
+  const textSecondary = isDark ? "text-gray-400" : "text-gray-500";
+  const inputBg = isDark ? "bg-gray-800 border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900";
 
   const handleLogin = () => {
     const user = users.find(u => u.email === loginEmail && u.password === loginPassword);
-    if (user) {
-      setCurrentUser(user);
-      setIsLoggedIn(true);
-      setPage("dashboard");
-      setLoginError("");
-      setLoginEmail("");
-      setLoginPassword("");
-    } else {
-      setLoginError(t.loginError);
-    }
+    if (user) { setCurrentUser(user); setIsLoggedIn(true); setPage("dashboard"); setLoginError(""); setLoginEmail(""); setLoginPassword(""); }
+    else setLoginError(t.loginError);
   };
 
   const handleRegister = () => {
-    if (registerPassword !== registerConfirm) {
-      setRegisterError(t.passwordMismatch);
-      return;
-    }
-    const newUser = {
-      id: users.length + 1,
-      email: registerEmail,
-      password: registerPassword,
-      name: registerName,
-      nameEn: registerName,
-      role: "user"
-    };
-    setUsers([...users, newUser]);
-    setCurrentUser(newUser);
-    setIsLoggedIn(true);
-    setPage("dashboard");
-    setRegisterError("");
-    setRegisterName("");
-    setRegisterEmail("");
-    setRegisterPassword("");
-    setRegisterConfirm("");
+    if (registerPassword !== registerConfirm) { setRegisterError(t.passwordMismatch); return; }
+    const newUser = { id: users.length + 1, email: registerEmail, password: registerPassword, name: registerName, nameEn: registerName, role: "user" };
+    setUsers([...users, newUser]); setCurrentUser(newUser); setIsLoggedIn(true); setPage("dashboard");
+    setRegisterError(""); setRegisterName(""); setRegisterEmail(""); setRegisterPassword(""); setRegisterConfirm("");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-    setPage("login");
-  };
-
-  const getTechName = (id) => {
-    const tech = sampleTechnicians.find(tc => tc.id === id);
-    if (!tech) return "—";
-    return lang === "ar" ? tech.name : tech.nameEn;
-  };
+  const handleLogout = () => { setIsLoggedIn(false); setCurrentUser(null); setPage("login"); };
+  const getTechName = (id) => { const tech = sampleTechnicians.find(tc => tc.id === id); return tech ? (lang === "ar" ? tech.name : tech.nameEn) : "—"; };
 
   const filteredOrders = orders.filter(o => {
     const custName = lang === "ar" ? o.customer : o.customerEn;
-    const matchSearch = searchQuery === "" || o.id.toLowerCase().includes(searchQuery.toLowerCase()) || custName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = !searchQuery || o.id.toLowerCase().includes(searchQuery.toLowerCase()) || custName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchStatus = statusFilter === "all" || o.status === statusFilter;
     const matchPriority = priorityFilter === "all" || o.priority === priorityFilter;
     return matchSearch && matchStatus && matchPriority;
   });
 
   const handleCreateOrder = () => {
-    const newO = {
-      id: `WO-2024-${String(orders.length + 1).padStart(3, "0")}`,
-      customer: newCust || (isRTL ? "عميل جديد" : "New Customer"),
-      customerEn: newCust || "New Customer",
-      type: newType,
-      priority: newPrio,
-      status: "pending",
-      tech: null,
-      date: new Date().toISOString().split("T")[0],
-      location: newLoc,
-      locationEn: newLoc,
-      desc: newDesc,
-      descEn: newDesc
-    };
-    setOrders([newO, ...orders]);
-    setShowNewOrder(false);
-    setNewCust(""); setNewLoc(""); setNewType("maintenance"); setNewPrio("medium"); setNewDesc("");
+    const newO = { id: `WO-2024-${String(orders.length + 1).padStart(3, "0")}`, customer: newCust || (isRTL ? "عميل جديد" : "New Customer"), customerEn: newCust || "New Customer", type: newType, priority: newPrio, status: "pending", tech: null, date: new Date().toISOString().split("T")[0], location: newLoc, locationEn: newLoc, desc: newDesc, descEn: newDesc };
+    setOrders([newO, ...orders]); setShowNewOrder(false); setNewCust(""); setNewLoc(""); setNewType("installation"); setNewPrio("medium"); setNewDesc("");
   };
 
   const handleCreateTicket = () => {
-    const newT = {
-      id: `TK-2024-${String(tickets.length + 1).padStart(3, "0")}`,
-      subject: newTicketSubject,
-      subjectEn: newTicketSubject,
-      customer: currentUser?.name || "مستخدم",
-      customerEn: currentUser?.nameEn || "User",
-      status: "open",
-      priority: newTicketPriority,
-      date: new Date().toISOString().split("T")[0],
-      desc: newTicketDesc,
-      descEn: newTicketDesc
-    };
-    setTickets([newT, ...tickets]);
-    setShowNewTicket(false);
-    setNewTicketSubject(""); setNewTicketDesc(""); setNewTicketPriority("medium");
+    const newT = { id: `TK-2024-${String(tickets.length + 1).padStart(3, "0")}`, subject: newTicketSubject, subjectEn: newTicketSubject, customer: currentUser?.name || "مستخدم", customerEn: currentUser?.nameEn || "User", status: "open", priority: newTicketPriority, date: new Date().toISOString().split("T")[0], desc: newTicketDesc, descEn: newTicketDesc };
+    setTickets([newT, ...tickets]); setShowNewTicket(false); setNewTicketSubject(""); setNewTicketDesc(""); setNewTicketPriority("medium");
   };
 
   const handleCreateAppointment = () => {
-    const newA = {
-      id: `AP-2024-${String(appointments.length + 1).padStart(3, "0")}`,
-      client: newApptClient,
-      clientEn: newApptClient,
-      phone: newApptPhone,
-      type: newApptType,
-      date: newApptDate,
-      time: newApptTime,
-      status: "scheduled",
-      location: newApptLocation,
-      locationEn: newApptLocation
-    };
-    setAppointments([newA, ...appointments]);
-    setShowNewAppointment(false);
-    setNewApptClient(""); setNewApptPhone(""); setNewApptDate(""); setNewApptTime(""); setNewApptType("consultation"); setNewApptLocation("");
+    const newA = { id: `AP-2024-${String(appointments.length + 1).padStart(3, "0")}`, client: newApptClient, clientEn: newApptClient, phone: newApptPhone, type: newApptType, date: newApptDate, time: newApptTime, status: "scheduled", location: newApptLocation, locationEn: newApptLocation };
+    setAppointments([newA, ...appointments]); setShowNewAppointment(false); setNewApptClient(""); setNewApptPhone(""); setNewApptDate(""); setNewApptTime(""); setNewApptType("consultation"); setNewApptLocation("");
   };
 
   const statsTotal = orders.length;
-  const statsActive = orders.filter(o => o.status === "inProgress").length;
   const statsCompleted = orders.filter(o => o.status === "completed").length;
   const openTicketsCount = tickets.filter(tk => tk.status === "open").length;
   const todayAppts = appointments.filter(a => a.date === new Date().toISOString().split("T")[0]).length;
+  const activeVehicles = fleetData.filter(v => v.status === "active").length;
 
   const weekData = [
-    { l: isRTL ? "سبت" : "Sat", v: 12 },
-    { l: isRTL ? "أحد" : "Sun", v: 19 },
-    { l: isRTL ? "اثن" : "Mon", v: 15 },
-    { l: isRTL ? "ثلا" : "Tue", v: 22 },
-    { l: isRTL ? "أرب" : "Wed", v: 18 },
-    { l: isRTL ? "خمي" : "Thu", v: 25 },
-    { l: isRTL ? "جمع" : "Fri", v: 8 }
+    { l: isRTL ? "سبت" : "Sat", v: 12 }, { l: isRTL ? "أحد" : "Sun", v: 19 }, { l: isRTL ? "اثن" : "Mon", v: 15 },
+    { l: isRTL ? "ثلا" : "Tue", v: 22 }, { l: isRTL ? "أرب" : "Wed", v: 18 }, { l: isRTL ? "خمي" : "Thu", v: 25 }, { l: isRTL ? "جمع" : "Fri", v: 8 }
   ];
 
   const navItems = [
     { id: "dashboard", icon: LayoutDashboard, label: t.dashboard },
+    { id: "fleet", icon: Car, label: t.fleet },
     { id: "workOrders", icon: ClipboardList, label: t.workOrders },
     { id: "tickets", icon: Ticket, label: t.tickets },
     { id: "appointments", icon: CalendarDays, label: t.appointments },
     { id: "technicians", icon: Users, label: t.technicians },
-    { id: "customers", icon: Briefcase, label: t.customers },
-    { id: "reports", icon: BarChart3, label: t.reports },
+    { id: "analytics", icon: BarChart3, label: t.analytics },
     { id: "settings", icon: Settings, label: t.settings }
   ];
-
-  if (currentUser?.role === "admin") {
-    navItems.push({ id: "adminPanel", icon: Shield, label: t.adminPanel });
-  }
+  if (currentUser?.role === "admin") navItems.push({ id: "adminPanel", icon: Shield, label: t.adminPanel });
 
   const notifications = [
-    { id: 1, text: isRTL ? "تذكرة جديدة تحتاج للمراجعة" : "New ticket needs review", time: "2m", urgent: true },
-    { id: 2, text: isRTL ? "موعد جديد تم تأكيده" : "New appointment confirmed", time: "10m", urgent: false },
-    { id: 3, text: isRTL ? "أمر عمل عاجل بحاجة للتعيين" : "Urgent work order needs assignment", time: "25m", urgent: true }
+    { id: 1, text: isRTL ? "تنبيه سرعة زائدة - مركبة V-004" : "Speeding Alert - Vehicle V-004", time: "2m", urgent: true },
+    { id: 2, text: isRTL ? "اكتمل تركيب الكاميرا" : "Camera installation complete", time: "15m", urgent: false },
+    { id: 3, text: isRTL ? "تذكرة جديدة تحتاج مراجعة" : "New ticket needs review", time: "30m", urgent: true }
   ];
 
   const renderLogin = () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+    <div className={`min-h-screen ${isDark ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" : "bg-gradient-to-br from-blue-50 via-white to-cyan-50"} flex items-center justify-center p-4 relative overflow-hidden`}>
+      <div className="absolute inset-0 overflow-hidden">
+        <div className={`absolute -top-40 -right-40 w-80 h-80 ${isDark ? "bg-cyan-500/10" : "bg-cyan-200/30"} rounded-full blur-3xl`}></div>
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 ${isDark ? "bg-blue-500/10" : "bg-blue-200/30"} rounded-full blur-3xl`}></div>
+      </div>
+      <div className={`${isDark ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-200"} backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 border relative z-10`}>
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Wrench size={32} className="text-white" />
+          <div className="flex justify-center mb-4">
+            <div className={`w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/25`}>
+              <Camera size={40} className="text-white" />
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.appName}</h1>
-          <p className="text-gray-500 mt-2">{t.login}</p>
+          <RooyaLogo size="large" theme={theme} />
+          <p className={`${textSecondary} mt-2`}>{t.appSubtitle}</p>
         </div>
-        
-        {loginError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
-            <AlertCircle size={18} />
-            <span className="text-sm">{loginError}</span>
-          </div>
-        )}
-        
+        {loginError && <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-4 flex items-center gap-2"><AlertCircle size={18} /><span className="text-sm">{loginError}</span></div>}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.email}</label>
-            <input
-              type="email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="admin@fsm.com"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.password}</label>
-            <input
-              type="password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            onClick={handleLogin}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            {t.login}
-          </button>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.email}</label><input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} placeholder="admin@rooya.ai" /></div>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.password}</label><input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} placeholder="••••••••" /></div>
+          <button onClick={handleLogin} className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"><Zap size={18} />{t.login}</button>
         </div>
-        
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
-            {t.noAccount}{" "}
-            <button onClick={() => setPage("register")} className="text-blue-600 font-medium hover:underline">
-              {t.register}
-            </button>
-          </p>
+        <div className="mt-6 text-center"><p className={`${textSecondary} text-sm`}>{t.noAccount} <button onClick={() => setPage("register")} className="text-cyan-400 font-semibold hover:underline">{t.register}</button></p></div>
+        <div className={`mt-6 pt-6 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+          <p className={`text-xs ${textSecondary} text-center mb-2`}>{isRTL ? "بيانات تجريبية:" : "Demo:"}</p>
+          <div className={`${isDark ? "bg-gray-900/50" : "bg-gray-100"} rounded-xl p-3 text-xs ${textSecondary}`}><p><span className="text-cyan-400">Admin:</span> admin@rooya.ai / admin123</p></div>
         </div>
-        
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-400 text-center mb-2">{isRTL ? "بيانات الدخول التجريبية:" : "Demo Credentials:"}</p>
-          <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 space-y-1">
-            <p><strong>{t.admin}:</strong> admin@fsm.com / admin123</p>
-            <p><strong>{t.user}:</strong> user@fsm.com / user123</p>
-            <p><strong>{t.technician}:</strong> tech@fsm.com / tech123</p>
-          </div>
-        </div>
-        
-        <div className="mt-4 text-center">
-          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="text-sm text-gray-500 hover:text-gray-700">
-            {lang === "ar" ? "English" : "العربية"}
-          </button>
+        <div className="mt-4 flex justify-center gap-4">
+          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className={`text-sm ${textSecondary} hover:text-cyan-400 flex items-center gap-1`}><Globe size={14} />{lang === "ar" ? "EN" : "عربي"}</button>
+          <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className={`text-sm ${textSecondary} hover:text-cyan-400 flex items-center gap-1`}>{isDark ? <Sun size={14} /> : <Moon size={14} />}{isDark ? "Light" : "Dark"}</button>
         </div>
       </div>
     </div>
   );
 
   const renderRegister = () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <UserPlus size={32} className="text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.register}</h1>
-        </div>
-        
-        {registerError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
-            <AlertCircle size={18} />
-            <span className="text-sm">{registerError}</span>
-          </div>
-        )}
-        
+    <div className={`min-h-screen ${isDark ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" : "bg-gradient-to-br from-blue-50 via-white to-cyan-50"} flex items-center justify-center p-4`}>
+      <div className={`${isDark ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-200"} backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 border`}>
+        <div className="text-center mb-8"><RooyaLogo size="large" theme={theme} /><p className={`${textSecondary} mt-2`}>{t.register}</p></div>
+        {registerError && <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-4"><span className="text-sm">{registerError}</span></div>}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.fullName}</label>
-            <input
-              type="text"
-              value={registerName}
-              onChange={(e) => setRegisterName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.email}</label>
-            <input
-              type="email"
-              value={registerEmail}
-              onChange={(e) => setRegisterEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.password}</label>
-            <input
-              type="password"
-              value={registerPassword}
-              onChange={(e) => setRegisterPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t.confirmPassword}</label>
-            <input
-              type="password"
-              value={registerConfirm}
-              onChange={(e) => setRegisterConfirm(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            onClick={handleRegister}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            {t.register}
-          </button>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.fullName}</label><input type="text" value={registerName} onChange={(e) => setRegisterName(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.email}</label><input type="email" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.password}</label><input type="password" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+          <div><label className={`block text-sm font-medium ${textSecondary} mb-2`}>{t.confirmPassword}</label><input type="password" value={registerConfirm} onChange={(e) => setRegisterConfirm(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+          <button onClick={handleRegister} className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-xl font-semibold">{t.register}</button>
         </div>
-        
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
-            {t.haveAccount}{" "}
-            <button onClick={() => setPage("login")} className="text-blue-600 font-medium hover:underline">
-              {t.login}
-            </button>
-          </p>
-        </div>
+        <div className="mt-6 text-center"><p className={`${textSecondary} text-sm`}>{t.haveAccount} <button onClick={() => setPage("login")} className="text-cyan-400 font-semibold hover:underline">{t.login}</button></p></div>
       </div>
     </div>
   );
 
   const renderSidebar = () => (
-    <div className={`bg-white h-screen flex flex-col transition-all duration-300 shadow-sm ${sidebarOpen ? "w-64" : "w-20"} ${isRTL ? "border-l border-gray-200" : "border-r border-gray-200"}`}>
-      <div className="p-4 flex items-center gap-3 border-b border-gray-100">
-        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
-          <Wrench size={20} className="text-white" />
-        </div>
-        {sidebarOpen && <span className="font-bold text-gray-800 text-sm leading-tight">{t.appName}</span>}
+    <div className={`${isDark ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"} h-screen flex flex-col transition-all duration-300 ${sidebarOpen ? "w-64" : "w-20"} ${isRTL ? "border-l" : "border-r"}`}>
+      <div className={`p-4 flex items-center gap-3 border-b ${isDark ? "border-gray-800" : "border-gray-200"}`}>
+        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-cyan-500/25"><Camera size={20} className="text-white" /></div>
+        {sidebarOpen && <RooyaLogo size="small" theme={theme} />}
       </div>
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = page === item.id;
           const NavIcon = item.icon;
           return (
-            <button
-              key={item.id}
-              onClick={() => { setPage(item.id); setShowMobileMenu(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${isActive ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"}`}
-            >
-              <NavIcon size={20} />
-              {sidebarOpen && <span>{item.label}</span>}
+            <button key={item.id} onClick={() => { setPage(item.id); setShowMobileMenu(false); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all ${isActive ? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30" : `${isDark ? "text-gray-400 hover:bg-gray-800 hover:text-white" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`}`}>
+              <NavIcon size={20} />{sidebarOpen && <span>{item.label}</span>}{isActive && sidebarOpen && <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-auto animate-pulse"></div>}
             </button>
           );
         })}
       </nav>
-      <div className="p-3 border-t border-gray-100">
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-50 text-sm">
-          {sidebarOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}
-        </button>
-      </div>
+      <div className={`p-3 border-t ${isDark ? "border-gray-800" : "border-gray-200"}`}><button onClick={() => setSidebarOpen(!sidebarOpen)} className={`w-full flex items-center justify-center px-3 py-2 rounded-xl ${isDark ? "text-gray-500 hover:bg-gray-800" : "text-gray-400 hover:bg-gray-100"}`}>{sidebarOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}</button></div>
     </div>
   );
 
   const renderHeader = () => (
-    <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+    <header className={`${isDark ? "bg-gray-900/80 border-gray-800" : "bg-white/80 border-gray-200"} backdrop-blur-xl border-b px-6 py-3 flex items-center justify-between sticky top-0 z-30`}>
       <div className="flex items-center gap-4">
-        <button className="lg:hidden" onClick={() => setShowMobileMenu(!showMobileMenu)}>
-          <Menu size={24} />
-        </button>
+        <button className="lg:hidden" onClick={() => setShowMobileMenu(!showMobileMenu)}><Menu size={24} className={textPrimary} /></button>
         <div className="relative">
-          <Search size={18} className="absolute top-1/2 text-gray-400" style={{ transform: "translateY(-50%)", left: isRTL ? undefined : 12, right: isRTL ? 12 : undefined }} />
-          <input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.search}
-            className={`bg-gray-50 border border-gray-200 rounded-lg py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"}`}
-          />
+          <Search size={18} className={`absolute top-1/2 ${textSecondary}`} style={{ transform: "translateY(-50%)", left: isRTL ? undefined : 12, right: isRTL ? 12 : undefined }} />
+          <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t.search} className={`${inputBg} border rounded-xl py-2.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${isRTL ? "pr-10 pl-4" : "pl-10 pr-4"}`} />
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 border border-gray-200">
-          <Globe size={16} />{lang === "ar" ? "EN" : "عربي"}
-        </button>
+        <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className={`p-2.5 rounded-xl ${isDark ? "bg-gray-800 text-yellow-400" : "bg-gray-100 text-gray-600"}`}>{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
+        <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm ${isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"}`}><Globe size={16} />{lang === "ar" ? "EN" : "عربي"}</button>
         <div className="relative">
-          <button onClick={() => setNotifOpen(!notifOpen)} className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-50">
-            <Bell size={20} />
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">3</span>
-          </button>
+          <button onClick={() => setNotifOpen(!notifOpen)} className={`relative p-2.5 rounded-xl ${isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"}`}><Bell size={18} /><span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">3</span></button>
           {notifOpen && (
-            <div className={`absolute top-12 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 ${isRTL ? "left-0" : "right-0"}`}>
-              <div className="p-3 border-b border-gray-100 font-semibold text-sm">{t.notifications}</div>
-              {notifications.map((n) => (
-                <div key={n.id} className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer flex gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.urgent ? "bg-red-500" : "bg-blue-500"}`}></div>
-                  <div>
-                    <p className="text-sm text-gray-700">{n.text}</p>
-                    <p className="text-xs text-gray-400 mt-1">{n.time}</p>
-                  </div>
-                </div>
-              ))}
+            <div className={`absolute top-14 w-80 ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl shadow-2xl border z-50 overflow-hidden ${isRTL ? "left-0" : "right-0"}`}>
+              <div className={`p-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"} font-semibold ${textPrimary}`}>{t.notifications}</div>
+              {notifications.map((n) => (<div key={n.id} className={`p-4 ${isDark ? "hover:bg-gray-700/50 border-gray-700/50" : "hover:bg-gray-50 border-gray-100"} cursor-pointer flex gap-3 border-b`}><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${n.urgent ? "bg-red-500/20 text-red-400" : "bg-cyan-500/20 text-cyan-400"}`}><AlertTriangle size={18} /></div><div className="flex-1"><p className={`text-sm ${textPrimary}`}>{n.text}</p><p className={`text-xs ${textSecondary} mt-1`}>{n.time}</p></div>{n.urgent && <PulsingDot color="bg-red-500" />}</div>))}
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-            {currentUser?.name?.charAt(0) || "U"}
-          </div>
-        </div>
-        <button onClick={handleLogout} className="p-2 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600">
-          <LogOut size={18} />
-        </button>
+        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-cyan-500/25">{currentUser?.name?.charAt(0) || "U"}</div>
+        <button onClick={handleLogout} className={`p-2.5 rounded-xl ${isDark ? "text-gray-400 hover:bg-red-500/20 hover:text-red-400" : "text-gray-500 hover:bg-red-50 hover:text-red-500"}`}><LogOut size={18} /></button>
       </div>
     </header>
   );
@@ -845,182 +668,117 @@ export default function App() {
   const renderDashboard = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t.welcome}{isRTL ? `، ${currentUser?.name}` : `, ${currentUser?.nameEn}`}</h1>
-          <p className="text-gray-500 text-sm mt-1">{isRTL ? "إليك ملخص اليوم" : "Here is your daily summary"}</p>
-        </div>
-        <button onClick={() => { setPage("workOrders"); setShowNewOrder(true); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700">
-          <Plus size={18} />{t.newOrder}
-        </button>
+        <div><h1 className={`text-3xl font-bold ${textPrimary}`}>{t.welcome}{isRTL ? `، ${currentUser?.name}` : `, ${currentUser?.nameEn}`}</h1><p className={`${textSecondary} mt-1 flex items-center gap-2`}><PulsingDot color="bg-emerald-500" />{isRTL ? "جميع الأنظمة تعمل" : "All systems operational"}</p></div>
+        <button onClick={() => { setPage("workOrders"); setShowNewOrder(true); }} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/25"><Plus size={18} />{t.newOrder}</button>
       </div>
-      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={ClipboardList} label={t.totalOrders} value={statsTotal} change={12} color="bg-blue-600" onClick={() => setPage("workOrders")} />
-        <StatCard icon={Ticket} label={t.openTickets} value={openTicketsCount} change={5} color="bg-orange-500" onClick={() => setPage("tickets")} />
-        <StatCard icon={CalendarCheck} label={t.todayAppointments} value={todayAppts} color="bg-purple-600" onClick={() => setPage("appointments")} />
-        <StatCard icon={CheckCircle} label={t.completedToday} value={statsCompleted} change={-3} color="bg-green-600" />
+        <StatCard icon={Car} label={t.activeVehicles} value={activeVehicles} change={8} color="bg-gradient-to-br from-cyan-500 to-blue-600" onClick={() => setPage("fleet")} theme={theme} glow="cyan" />
+        <StatCard icon={Camera} label={t.aiDetections} value={156} change={23} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={AlertTriangle} label={t.aiAlerts} value={12} change={-15} color="bg-gradient-to-br from-orange-500 to-red-600" theme={theme} glow="orange" />
+        <StatCard icon={ShieldCheck} label={t.safetyScore} value={92} color="bg-gradient-to-br from-purple-500 to-indigo-600" theme={theme} glow="cyan" />
       </div>
-      
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="cyan">
+        <div className="flex items-center justify-between mb-6"><h3 className={`font-bold ${textPrimary} flex items-center gap-2`}><PulsingDot color="bg-cyan-500" />{t.liveTracking}</h3><button onClick={() => setPage("fleet")} className="text-cyan-400 text-sm hover:underline flex items-center gap-1">{t.viewAll}<ChevronRight size={16} /></button></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {fleetData.map((v) => (
+            <div key={v.id} className={`${isDark ? "bg-gray-900/50 border-gray-700/50" : "bg-gray-50 border-gray-200"} border rounded-xl p-4 hover:border-cyan-500/50 transition-all cursor-pointer`}>
+              <div className="flex items-center justify-between mb-3"><div className="flex items-center gap-2"><Car size={18} className={v.status === "alert" ? "text-red-400" : "text-cyan-400"} /><span className={`font-mono text-sm ${textPrimary}`}>{lang === "ar" ? v.plate : v.plateEn}</span></div><StatusBadge status={v.status} t={t} theme={theme} /></div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between"><span className={`text-xs ${textSecondary}`}>{t.speed}</span><span className={`text-sm font-semibold ${v.speed > 100 ? "text-red-400" : "text-emerald-400"}`}>{v.speed} km/h</span></div>
+                <div className="flex items-center justify-between"><span className={`text-xs ${textSecondary}`}>{t.safetyScore}</span><div className="flex items-center gap-2"><div className={`w-16 h-1.5 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"}`}><div className={`h-full rounded-full ${v.safetyScore > 80 ? "bg-emerald-500" : v.safetyScore > 60 ? "bg-yellow-500" : "bg-red-500"}`} style={{ width: `${v.safetyScore}%` }}></div></div><span className={`text-xs ${textPrimary}`}>{v.safetyScore}%</span></div></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </GlowingCard>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-800">{t.weeklyOverview}</h3>
-          </div>
-          <MiniBarChart data={weekData} />
-        </div>
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">{t.quickActions}</h3>
-          <div className="space-y-2">
-            <button onClick={() => { setPage("workOrders"); setShowNewOrder(true); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-100">
-              <Plus size={18} />{t.newOrder}
-            </button>
-            <button onClick={() => { setPage("tickets"); setShowNewTicket(true); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-100">
-              <Ticket size={18} />{t.newTicket}
-            </button>
-            <button onClick={() => { setPage("appointments"); setShowNewAppointment(true); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-100">
-              <CalendarDays size={18} />{t.newAppointment}
-            </button>
-            <button onClick={() => setPage("reports")} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-100">
-              <BarChart3 size={18} />{t.reports}
-            </button>
-          </div>
-        </div>
+        <GlowingCard className={`lg:col-span-2 ${cardBg} border backdrop-blur-sm p-6`} glow="cyan"><h3 className={`font-bold ${textPrimary} mb-6`}>{t.weeklyOverview}</h3><MiniBarChart data={weekData} color="bg-gradient-to-t from-cyan-600 to-cyan-400" theme={theme} /></GlowingCard>
+        <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="green"><h3 className={`font-bold ${textPrimary} mb-6`}>{t.safetyScore}</h3><div className="flex justify-center"><CircularProgress value={92} color="#00D4FF" /></div><p className={`text-center ${textSecondary} text-sm mt-4`}>{isRTL ? "أداء ممتاز" : "Excellent performance"}</p></GlowingCard>
       </div>
-      
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800">{t.recentActivity}</h3>
-          <button onClick={() => setPage("workOrders")} className="text-blue-600 text-sm hover:underline">{t.viewAll}</button>
-        </div>
+    </div>
+  );
+
+  const renderFleet = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between"><h1 className={`text-3xl font-bold ${textPrimary}`}>{t.fleet}</h1><div className="flex items-center gap-2"><PulsingDot color="bg-emerald-500" /><span className={textSecondary}>{activeVehicles} {t.activeVehicles}</span></div></div>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <StatCard icon={Car} label={t.vehicles} value={fleetData.length} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={Navigation} label={t.totalDistance} value="12,450" color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={Gauge} label={t.fuelEfficiency} value="94" color="bg-gradient-to-br from-purple-500 to-indigo-600" theme={theme} glow="cyan" />
+        <StatCard icon={AlertTriangle} label={t.aiAlerts} value={12} color="bg-gradient-to-br from-orange-500 to-red-500" theme={theme} glow="orange" />
+      </div>
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm overflow-hidden`} glow="cyan">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="text-gray-500 border-b border-gray-100">
-                <th className="text-start pb-3 font-medium">{t.orderID}</th>
-                <th className="text-start pb-3 font-medium">{t.customer}</th>
-                <th className="text-start pb-3 font-medium">{t.priority}</th>
-                <th className="text-start pb-3 font-medium">{t.status}</th>
-                <th className="text-start pb-3 font-medium">{t.assignedTo}</th>
-              </tr>
-            </thead>
+            <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}><tr className={textSecondary}><th className="text-start p-4 font-semibold">{t.plateNumber}</th><th className="text-start p-4 font-semibold">{t.drivers}</th><th className="text-start p-4 font-semibold">{t.status}</th><th className="text-start p-4 font-semibold">{t.speed}</th><th className="text-start p-4 font-semibold">{t.location}</th><th className="text-start p-4 font-semibold">{t.safetyScore}</th><th className="text-start p-4 font-semibold">{t.fuel}</th></tr></thead>
             <tbody>
-              {orders.slice(0, 5).map((o) => (
-                <tr key={o.id} onClick={() => { setPage("workOrders"); setSelectedOrder(o); }} className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer">
-                  <td className="py-3 font-mono text-blue-600">{o.id}</td>
-                  <td className="py-3">{lang === "ar" ? o.customer : o.customerEn}</td>
-                  <td className="py-3"><PriorityBadge priority={o.priority} t={t} /></td>
-                  <td className="py-3"><StatusBadge status={o.status} t={t} /></td>
-                  <td className="py-3">{getTechName(o.tech)}</td>
+              {fleetData.map((v) => (
+                <tr key={v.id} className={`border-t ${isDark ? "border-gray-800 hover:bg-gray-800/50" : "border-gray-100 hover:bg-gray-50"}`}>
+                  <td className={`p-4 font-mono ${textPrimary}`}>{lang === "ar" ? v.plate : v.plateEn}</td>
+                  <td className={`p-4 ${textPrimary}`}>{lang === "ar" ? v.driver : v.driverEn}</td>
+                  <td className="p-4"><StatusBadge status={v.status} t={t} theme={theme} /></td>
+                  <td className={`p-4 font-semibold ${v.speed > 100 ? "text-red-400" : "text-emerald-400"}`}>{v.speed} km/h</td>
+                  <td className={`p-4 ${textSecondary}`}>{lang === "ar" ? v.location : v.locationEn}</td>
+                  <td className="p-4"><div className="flex items-center gap-2"><div className={`w-20 h-2 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"}`}><div className={`h-full rounded-full ${v.safetyScore > 80 ? "bg-emerald-500" : "bg-yellow-500"}`} style={{ width: `${v.safetyScore}%` }}></div></div><span className={textPrimary}>{v.safetyScore}%</span></div></td>
+                  <td className="p-4"><div className="flex items-center gap-2"><Battery size={16} className={v.fuel > 50 ? "text-emerald-400" : "text-yellow-400"} /><span className={textPrimary}>{v.fuel}%</span></div></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </GlowingCard>
     </div>
   );
 
   const renderTickets = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">{t.tickets}</h1>
-        <button onClick={() => setShowNewTicket(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700">
-          <Plus size={18} />{t.newTicket}
-        </button>
-      </div>
-      
+      <div className="flex items-center justify-between"><h1 className={`text-3xl font-bold ${textPrimary}`}>{t.tickets}</h1><button onClick={() => setShowNewTicket(true)} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/25"><Plus size={18} />{t.newTicket}</button></div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard icon={Ticket} label={t.totalTickets} value={tickets.length} color="bg-blue-600" />
-        <StatCard icon={AlertCircle} label={t.openTickets} value={tickets.filter(tk => tk.status === "open").length} color="bg-orange-500" />
-        <StatCard icon={CheckCircle} label={t.closedTickets} value={tickets.filter(tk => tk.status === "closed" || tk.status === "resolved").length} color="bg-green-600" />
+        <StatCard icon={Ticket} label={t.totalTickets} value={tickets.length} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={AlertCircle} label={t.openTickets} value={openTicketsCount} color="bg-gradient-to-br from-orange-500 to-red-500" theme={theme} glow="orange" />
+        <StatCard icon={CheckCircle} label={t.closedTickets} value={tickets.filter(tk => tk.status === "closed" || tk.status === "resolved").length} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
       </div>
-      
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm overflow-hidden`} glow="cyan">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="text-gray-500">
-                <th className="text-start p-4 font-medium">{t.ticketID}</th>
-                <th className="text-start p-4 font-medium">{t.ticketSubject}</th>
-                <th className="text-start p-4 font-medium">{t.customer}</th>
-                <th className="text-start p-4 font-medium">{t.priority}</th>
-                <th className="text-start p-4 font-medium">{t.status}</th>
-                <th className="text-start p-4 font-medium">{t.date}</th>
-                <th className="text-start p-4 font-medium">{t.actions}</th>
-              </tr>
-            </thead>
+            <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}><tr className={textSecondary}><th className="text-start p-4 font-semibold">{t.ticketID}</th><th className="text-start p-4 font-semibold">{t.ticketSubject}</th><th className="text-start p-4 font-semibold">{t.customer}</th><th className="text-start p-4 font-semibold">{t.priority}</th><th className="text-start p-4 font-semibold">{t.status}</th><th className="text-start p-4 font-semibold">{t.date}</th><th className="text-start p-4 font-semibold">{t.actions}</th></tr></thead>
             <tbody>
               {tickets.map((tk) => (
-                <tr key={tk.id} className="border-b border-gray-50 hover:bg-blue-50">
-                  <td className="p-4 font-mono text-blue-600">{tk.id}</td>
-                  <td className="p-4">{lang === "ar" ? tk.subject : tk.subjectEn}</td>
-                  <td className="p-4">{lang === "ar" ? tk.customer : tk.customerEn}</td>
-                  <td className="p-4"><PriorityBadge priority={tk.priority} t={t} /></td>
-                  <td className="p-4"><StatusBadge status={tk.status} t={t} /></td>
-                  <td className="p-4 text-gray-500">{tk.date}</td>
-                  <td className="p-4">
-                    <button onClick={() => setSelectedTicket(tk)} className="p-1.5 rounded hover:bg-blue-100 text-blue-600"><Eye size={16} /></button>
-                  </td>
+                <tr key={tk.id} className={`border-t ${isDark ? "border-gray-800 hover:bg-cyan-500/5" : "border-gray-100 hover:bg-cyan-50"}`}>
+                  <td className="p-4 font-mono text-cyan-400">{tk.id}</td>
+                  <td className={`p-4 ${textPrimary}`}>{lang === "ar" ? tk.subject : tk.subjectEn}</td>
+                  <td className={`p-4 ${textPrimary}`}>{lang === "ar" ? tk.customer : tk.customerEn}</td>
+                  <td className="p-4"><PriorityBadge priority={tk.priority} t={t} theme={theme} /></td>
+                  <td className="p-4"><StatusBadge status={tk.status} t={t} theme={theme} /></td>
+                  <td className={`p-4 ${textSecondary}`}>{tk.date}</td>
+                  <td className="p-4"><button onClick={() => setSelectedTicket(tk)} className={`p-2 rounded-lg ${isDark ? "hover:bg-cyan-500/20 text-cyan-400" : "hover:bg-cyan-50 text-cyan-600"}`}><Eye size={16} /></button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-      
+      </GlowingCard>
       {showNewTicket && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setShowNewTicket(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold">{t.newTicket}</h2>
-              <button onClick={() => setShowNewTicket(false)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowNewTicket(false)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><h2 className={`text-lg font-bold ${textPrimary}`}>{t.newTicket}</h2><button onClick={() => setShowNewTicket(false)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.ticketSubject}</label>
-                <input value={newTicketSubject} onChange={(e) => setNewTicketSubject(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.priority}</label>
-                <select value={newTicketPriority} onChange={(e) => setNewTicketPriority(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-                  <option value="low">{t.low}</option>
-                  <option value="medium">{t.medium}</option>
-                  <option value="high">{t.high}</option>
-                  <option value="urgent">{t.urgent}</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.ticketDescription}</label>
-                <textarea value={newTicketDesc} onChange={(e) => setNewTicketDesc(e.target.value)} rows={4} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button onClick={handleCreateTicket} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700">{t.submit}</button>
-                <button onClick={() => setShowNewTicket(false)} className="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.cancel}</button>
-              </div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.ticketSubject}</label><input value={newTicketSubject} onChange={(e) => setNewTicketSubject(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.priority}</label><select value={newTicketPriority} onChange={(e) => setNewTicketPriority(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="low">{t.low}</option><option value="medium">{t.medium}</option><option value="high">{t.high}</option><option value="urgent">{t.urgent}</option></select></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.ticketDescription}</label><textarea value={newTicketDesc} onChange={(e) => setNewTicketDesc(e.target.value)} rows={4} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}></textarea></div>
+              <div className="flex gap-3"><button onClick={handleCreateTicket} className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2.5 rounded-xl font-semibold">{t.submit}</button><button onClick={() => setShowNewTicket(false)} className={`flex-1 border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.cancel}</button></div>
             </div>
           </div>
         </div>
       )}
-      
       {selectedTicket && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setSelectedTicket(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold">{t.details}</h2>
-                <p className="text-sm text-blue-600 font-mono">{selectedTicket.id}</p>
-              </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedTicket(null)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><div><h2 className={`text-lg font-bold ${textPrimary}`}>{t.details}</h2><p className="text-cyan-400 font-mono">{selectedTicket.id}</p></div><button onClick={() => setSelectedTicket(null)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="text-xs text-gray-400">{t.ticketSubject}</label><p className="font-medium">{lang === "ar" ? selectedTicket.subject : selectedTicket.subjectEn}</p></div>
-                <div><label className="text-xs text-gray-400">{t.customer}</label><p className="font-medium">{lang === "ar" ? selectedTicket.customer : selectedTicket.customerEn}</p></div>
-                <div><label className="text-xs text-gray-400">{t.priority}</label><div className="mt-1"><PriorityBadge priority={selectedTicket.priority} t={t} /></div></div>
-                <div><label className="text-xs text-gray-400">{t.status}</label><div className="mt-1"><StatusBadge status={selectedTicket.status} t={t} /></div></div>
-              </div>
-              <div><label className="text-xs text-gray-400">{t.description}</label><p className="text-sm mt-1 text-gray-700 bg-gray-50 p-3 rounded-lg">{lang === "ar" ? selectedTicket.desc : selectedTicket.descEn}</p></div>
-              <button onClick={() => setSelectedTicket(null)} className="w-full border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.close}</button>
+              <div className="grid grid-cols-2 gap-4"><div><label className={`text-xs ${textSecondary}`}>{t.ticketSubject}</label><p className={`font-semibold ${textPrimary}`}>{lang === "ar" ? selectedTicket.subject : selectedTicket.subjectEn}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.customer}</label><p className={`font-semibold ${textPrimary}`}>{lang === "ar" ? selectedTicket.customer : selectedTicket.customerEn}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.priority}</label><div className="mt-1"><PriorityBadge priority={selectedTicket.priority} t={t} theme={theme} /></div></div><div><label className={`text-xs ${textSecondary}`}>{t.status}</label><div className="mt-1"><StatusBadge status={selectedTicket.status} t={t} theme={theme} /></div></div></div>
+              <div><label className={`text-xs ${textSecondary}`}>{t.description}</label><p className={`text-sm mt-1 ${isDark ? "bg-gray-900/50" : "bg-gray-50"} p-3 rounded-xl ${textPrimary}`}>{lang === "ar" ? selectedTicket.desc : selectedTicket.descEn}</p></div>
+              <button onClick={() => setSelectedTicket(null)} className={`w-full border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.close}</button>
             </div>
           </div>
         </div>
@@ -1030,268 +788,144 @@ export default function App() {
 
   const renderAppointments = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">{t.appointments}</h1>
-        <button onClick={() => setShowNewAppointment(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700">
-          <Plus size={18} />{t.newAppointment}
-        </button>
-      </div>
-      
+      <div className="flex items-center justify-between"><h1 className={`text-3xl font-bold ${textPrimary}`}>{t.appointments}</h1><button onClick={() => setShowNewAppointment(true)} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/25"><Plus size={18} />{t.newAppointment}</button></div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard icon={CalendarDays} label={t.totalAppointments} value={appointments.length} color="bg-blue-600" />
-        <StatCard icon={CalendarCheck} label={t.todayAppointments} value={appointments.filter(a => a.date === new Date().toISOString().split("T")[0]).length} color="bg-green-600" />
-        <StatCard icon={Clock} label={t.upcomingAppointments} value={appointments.filter(a => a.date > new Date().toISOString().split("T")[0]).length} color="bg-purple-600" />
+        <StatCard icon={CalendarDays} label={t.totalAppointments} value={appointments.length} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={CalendarCheck} label={t.todayAppointments} value={todayAppts} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={Clock} label={t.upcomingAppointments} value={appointments.filter(a => a.date > new Date().toISOString().split("T")[0]).length} color="bg-gradient-to-br from-purple-500 to-indigo-600" theme={theme} glow="cyan" />
       </div>
-      
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm overflow-hidden`} glow="cyan">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="text-gray-500">
-                <th className="text-start p-4 font-medium">ID</th>
-                <th className="text-start p-4 font-medium">{t.clientName}</th>
-                <th className="text-start p-4 font-medium">{t.clientPhone}</th>
-                <th className="text-start p-4 font-medium">{t.type}</th>
-                <th className="text-start p-4 font-medium">{t.date}</th>
-                <th className="text-start p-4 font-medium">{t.appointmentTime}</th>
-                <th className="text-start p-4 font-medium">{t.status}</th>
-                <th className="text-start p-4 font-medium">{t.actions}</th>
-              </tr>
-            </thead>
+            <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}><tr className={textSecondary}><th className="text-start p-4 font-semibold">ID</th><th className="text-start p-4 font-semibold">{t.clientName}</th><th className="text-start p-4 font-semibold">{t.clientPhone}</th><th className="text-start p-4 font-semibold">{t.type}</th><th className="text-start p-4 font-semibold">{t.date}</th><th className="text-start p-4 font-semibold">{t.appointmentTime}</th><th className="text-start p-4 font-semibold">{t.status}</th><th className="text-start p-4 font-semibold">{t.actions}</th></tr></thead>
             <tbody>
               {appointments.map((appt) => (
-                <tr key={appt.id} className="border-b border-gray-50 hover:bg-blue-50">
-                  <td className="p-4 font-mono text-blue-600">{appt.id}</td>
-                  <td className="p-4">{lang === "ar" ? appt.client : appt.clientEn}</td>
-                  <td className="p-4 text-gray-500">{appt.phone}</td>
-                  <td className="p-4">{t[appt.type] || appt.type}</td>
-                  <td className="p-4">{appt.date}</td>
-                  <td className="p-4">{appt.time}</td>
-                  <td className="p-4"><StatusBadge status={appt.status} t={t} /></td>
-                  <td className="p-4">
-                    <button onClick={() => setSelectedAppointment(appt)} className="p-1.5 rounded hover:bg-blue-100 text-blue-600"><Eye size={16} /></button>
-                  </td>
+                <tr key={appt.id} className={`border-t ${isDark ? "border-gray-800 hover:bg-cyan-500/5" : "border-gray-100 hover:bg-cyan-50"}`}>
+                  <td className="p-4 font-mono text-cyan-400">{appt.id}</td>
+                  <td className={`p-4 ${textPrimary}`}>{lang === "ar" ? appt.client : appt.clientEn}</td>
+                  <td className={`p-4 ${textSecondary}`}>{appt.phone}</td>
+                  <td className={`p-4 ${textPrimary}`}>{t[appt.type] || appt.type}</td>
+                  <td className={`p-4 ${textPrimary}`}>{appt.date}</td>
+                  <td className={`p-4 ${textPrimary}`}>{appt.time}</td>
+                  <td className="p-4"><StatusBadge status={appt.status} t={t} theme={theme} /></td>
+                  <td className="p-4"><button onClick={() => setSelectedAppointment(appt)} className={`p-2 rounded-lg ${isDark ? "hover:bg-cyan-500/20 text-cyan-400" : "hover:bg-cyan-50 text-cyan-600"}`}><Eye size={16} /></button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-      
+      </GlowingCard>
       {showNewAppointment && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setShowNewAppointment(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold">{t.newAppointment}</h2>
-              <button onClick={() => setShowNewAppointment(false)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowNewAppointment(false)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><h2 className={`text-lg font-bold ${textPrimary}`}>{t.newAppointment}</h2><button onClick={() => setShowNewAppointment(false)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.clientName}</label>
-                  <input value={newApptClient} onChange={(e) => setNewApptClient(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.clientPhone}</label>
-                  <input value={newApptPhone} onChange={(e) => setNewApptPhone(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.appointmentDate}</label>
-                  <input type="date" value={newApptDate} onChange={(e) => setNewApptDate(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.appointmentTime}</label>
-                  <input type="time" value={newApptTime} onChange={(e) => setNewApptTime(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.appointmentType}</label>
-                <select value={newApptType} onChange={(e) => setNewApptType(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-                  <option value="consultation">{t.consultation}</option>
-                  <option value="siteVisit">{t.siteVisit}</option>
-                  <option value="followUp">{t.followUp}</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.location}</label>
-                <input value={newApptLocation} onChange={(e) => setNewApptLocation(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button onClick={handleCreateAppointment} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700">{t.submit}</button>
-                <button onClick={() => setShowNewAppointment(false)} className="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.cancel}</button>
-              </div>
+              <div className="grid grid-cols-2 gap-3"><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.clientName}</label><input value={newApptClient} onChange={(e) => setNewApptClient(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.clientPhone}</label><input value={newApptPhone} onChange={(e) => setNewApptPhone(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div></div>
+              <div className="grid grid-cols-2 gap-3"><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.appointmentDate}</label><input type="date" value={newApptDate} onChange={(e) => setNewApptDate(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.appointmentTime}</label><input type="time" value={newApptTime} onChange={(e) => setNewApptTime(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.appointmentType}</label><select value={newApptType} onChange={(e) => setNewApptType(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="consultation">{t.consultation}</option><option value="siteVisit">{t.siteVisit}</option><option value="followUp">{t.followUp}</option></select></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.location}</label><input value={newApptLocation} onChange={(e) => setNewApptLocation(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+              <div className="flex gap-3"><button onClick={handleCreateAppointment} className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2.5 rounded-xl font-semibold">{t.submit}</button><button onClick={() => setShowNewAppointment(false)} className={`flex-1 border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.cancel}</button></div>
             </div>
           </div>
         </div>
       )}
-      
       {selectedAppointment && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setSelectedAppointment(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold">{t.details}</h2>
-                <p className="text-sm text-blue-600 font-mono">{selectedAppointment.id}</p>
-              </div>
-              <button onClick={() => setSelectedAppointment(null)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedAppointment(null)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><div><h2 className={`text-lg font-bold ${textPrimary}`}>{t.details}</h2><p className="text-cyan-400 font-mono">{selectedAppointment.id}</p></div><button onClick={() => setSelectedAppointment(null)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="text-xs text-gray-400">{t.clientName}</label><p className="font-medium">{lang === "ar" ? selectedAppointment.client : selectedAppointment.clientEn}</p></div>
-                <div><label className="text-xs text-gray-400">{t.clientPhone}</label><p className="font-medium">{selectedAppointment.phone}</p></div>
-                <div><label className="text-xs text-gray-400">{t.appointmentDate}</label><p className="font-medium">{selectedAppointment.date}</p></div>
-                <div><label className="text-xs text-gray-400">{t.appointmentTime}</label><p className="font-medium">{selectedAppointment.time}</p></div>
-                <div><label className="text-xs text-gray-400">{t.type}</label><p className="font-medium">{t[selectedAppointment.type]}</p></div>
-                <div><label className="text-xs text-gray-400">{t.status}</label><div className="mt-1"><StatusBadge status={selectedAppointment.status} t={t} /></div></div>
-              </div>
-              <div><label className="text-xs text-gray-400">{t.location}</label><p className="text-sm mt-1 text-gray-700 bg-gray-50 p-3 rounded-lg">{lang === "ar" ? selectedAppointment.location : selectedAppointment.locationEn}</p></div>
-              <button onClick={() => setSelectedAppointment(null)} className="w-full border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.close}</button>
+              <div className="grid grid-cols-2 gap-4"><div><label className={`text-xs ${textSecondary}`}>{t.clientName}</label><p className={`font-semibold ${textPrimary}`}>{lang === "ar" ? selectedAppointment.client : selectedAppointment.clientEn}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.clientPhone}</label><p className={`font-semibold ${textPrimary}`}>{selectedAppointment.phone}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.appointmentDate}</label><p className={`font-semibold ${textPrimary}`}>{selectedAppointment.date}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.appointmentTime}</label><p className={`font-semibold ${textPrimary}`}>{selectedAppointment.time}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.type}</label><p className={`font-semibold ${textPrimary}`}>{t[selectedAppointment.type]}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.status}</label><div className="mt-1"><StatusBadge status={selectedAppointment.status} t={t} theme={theme} /></div></div></div>
+              <div><label className={`text-xs ${textSecondary}`}>{t.location}</label><p className={`text-sm mt-1 ${isDark ? "bg-gray-900/50" : "bg-gray-50"} p-3 rounded-xl ${textPrimary}`}>{lang === "ar" ? selectedAppointment.location : selectedAppointment.locationEn}</p></div>
+              <button onClick={() => setSelectedAppointment(null)} className={`w-full border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.close}</button>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+
+  const renderTechnicians = () => (
+    <div className="space-y-6">
+      <h1 className={`text-3xl font-bold ${textPrimary}`}>{t.technicians}</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard icon={Users} label={t.totalTechnicians} value={sampleTechnicians.length} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={CheckCircle} label={t.available} value={sampleTechnicians.filter(tc => tc.status === "available").length} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={Truck} label={t.onJob} value={sampleTechnicians.filter(tc => tc.status === "onJob").length} color="bg-gradient-to-br from-orange-500 to-amber-500" theme={theme} glow="orange" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {sampleTechnicians.map((tech) => (
+          <GlowingCard key={tech.id} className={`${cardBg} border backdrop-blur-sm p-5`} glow="cyan">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-cyan-500/25">{tech.avatar}</div>
+              <div className="flex-1"><h3 className={`font-bold ${textPrimary}`}>{lang === "ar" ? tech.name : tech.nameEn}</h3><p className={`text-sm ${textSecondary}`}>{lang === "ar" ? tech.spec : tech.specEn}</p></div>
+              <StatusBadge status={tech.status} t={t} theme={theme} />
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center pt-4 border-t border-gray-700/50">
+              <div><p className={`text-xl font-bold ${textPrimary}`}>{tech.jobs}</p><p className={`text-xs ${textSecondary}`}>{t.jobsCompleted}</p></div>
+              <div><p className={`text-xl font-bold text-yellow-400`}>{tech.rating}</p><p className={`text-xs ${textSecondary}`}>{t.rating}</p></div>
+              <div><p className={`text-xl font-bold ${textPrimary}`}><Star size={20} className="inline text-yellow-400" /></p><p className={`text-xs ${textSecondary}`}>{t.rating}</p></div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button className={`flex-1 border ${isDark ? "border-gray-700 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-50"} py-2.5 rounded-xl text-sm font-medium ${textPrimary} flex items-center justify-center gap-2`}><Phone size={16} />{t.call}</button>
+              <button className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2"><ClipboardList size={16} />{t.assign}</button>
+            </div>
+          </GlowingCard>
+        ))}
+      </div>
     </div>
   );
 
   const renderWorkOrders = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">{t.workOrders}</h1>
-        <button onClick={() => setShowNewOrder(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700">
-          <Plus size={18} />{t.newOrder}
-        </button>
-      </div>
+      <div className="flex items-center justify-between"><h1 className={`text-3xl font-bold ${textPrimary}`}>{t.workOrders}</h1><button onClick={() => setShowNewOrder(true)} className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-cyan-500/25"><Plus size={18} />{t.newOrder}</button></div>
       <div className="flex items-center gap-3 flex-wrap">
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-          <option value="all">{t.allStatuses}</option>
-          <option value="pending">{t.pending}</option>
-          <option value="inProgress">{t.inProgress}</option>
-          <option value="completed">{t.completed}</option>
-        </select>
-        <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-          <option value="all">{t.allPriorities}</option>
-          <option value="urgent">{t.urgent}</option>
-          <option value="high">{t.high}</option>
-          <option value="medium">{t.medium}</option>
-          <option value="low">{t.low}</option>
-        </select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={`${inputBg} border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="all">{t.allStatuses}</option><option value="pending">{t.pending}</option><option value="inProgress">{t.inProgress}</option><option value="completed">{t.completed}</option></select>
+        <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className={`${inputBg} border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="all">{t.allPriorities}</option><option value="urgent">{t.urgent}</option><option value="high">{t.high}</option><option value="medium">{t.medium}</option><option value="low">{t.low}</option></select>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm overflow-hidden`} glow="cyan">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="text-gray-500">
-                <th className="text-start p-4 font-medium">{t.orderID}</th>
-                <th className="text-start p-4 font-medium">{t.customer}</th>
-                <th className="text-start p-4 font-medium">{t.type}</th>
-                <th className="text-start p-4 font-medium">{t.priority}</th>
-                <th className="text-start p-4 font-medium">{t.status}</th>
-                <th className="text-start p-4 font-medium">{t.assignedTo}</th>
-                <th className="text-start p-4 font-medium">{t.date}</th>
-                <th className="text-start p-4 font-medium">{t.actions}</th>
-              </tr>
-            </thead>
+            <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}><tr className={textSecondary}><th className="text-start p-4 font-semibold">{t.orderID}</th><th className="text-start p-4 font-semibold">{t.customer}</th><th className="text-start p-4 font-semibold">{t.type}</th><th className="text-start p-4 font-semibold">{t.priority}</th><th className="text-start p-4 font-semibold">{t.status}</th><th className="text-start p-4 font-semibold">{t.assignedTo}</th><th className="text-start p-4 font-semibold">{t.date}</th><th className="text-start p-4 font-semibold">{t.actions}</th></tr></thead>
             <tbody>
               {filteredOrders.map((o) => (
-                <tr key={o.id} className="border-b border-gray-50 hover:bg-blue-50">
-                  <td className="p-4 font-mono text-blue-600 cursor-pointer" onClick={() => setSelectedOrder(o)}>{o.id}</td>
-                  <td className="p-4">{lang === "ar" ? o.customer : o.customerEn}</td>
-                  <td className="p-4">{t[o.type] || o.type}</td>
-                  <td className="p-4"><PriorityBadge priority={o.priority} t={t} /></td>
-                  <td className="p-4"><StatusBadge status={o.status} t={t} /></td>
-                  <td className="p-4">{getTechName(o.tech)}</td>
-                  <td className="p-4 text-gray-500">{o.date}</td>
-                  <td className="p-4">
-                    <button onClick={() => setSelectedOrder(o)} className="p-1.5 rounded hover:bg-blue-100 text-blue-600"><Eye size={16} /></button>
-                  </td>
+                <tr key={o.id} className={`border-t ${isDark ? "border-gray-800 hover:bg-cyan-500/5" : "border-gray-100 hover:bg-cyan-50"}`}>
+                  <td className="p-4 font-mono text-cyan-400 cursor-pointer hover:underline" onClick={() => setSelectedOrder(o)}>{o.id}</td>
+                  <td className={`p-4 ${textPrimary}`}>{lang === "ar" ? o.customer : o.customerEn}</td>
+                  <td className={`p-4 ${textPrimary}`}>{t[o.type] || o.type}</td>
+                  <td className="p-4"><PriorityBadge priority={o.priority} t={t} theme={theme} /></td>
+                  <td className="p-4"><StatusBadge status={o.status} t={t} theme={theme} /></td>
+                  <td className={`p-4 ${textPrimary}`}>{getTechName(o.tech)}</td>
+                  <td className={`p-4 ${textSecondary}`}>{o.date}</td>
+                  <td className="p-4"><button onClick={() => setSelectedOrder(o)} className={`p-2 rounded-lg ${isDark ? "hover:bg-cyan-500/20 text-cyan-400" : "hover:bg-cyan-50 text-cyan-600"}`}><Eye size={16} /></button></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {filteredOrders.length === 0 && (
-            <div className="text-center py-12 text-gray-400">
-              <ClipboardList size={48} className="mx-auto mb-3 opacity-30" />
-              <p>{t.noData}</p>
-            </div>
-          )}
+          {filteredOrders.length === 0 && <div className="text-center py-16"><ClipboardList size={48} className={`mx-auto mb-3 ${textSecondary} opacity-30`} /><p className={textSecondary}>{t.noData}</p></div>}
         </div>
-      </div>
-      
+      </GlowingCard>
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setSelectedOrder(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-screen overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">{t.orderDetails}</h2>
-                <p className="text-sm text-blue-600 font-mono">{selectedOrder.id}</p>
-              </div>
-              <button onClick={() => setSelectedOrder(null)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedOrder(null)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><div><h2 className={`text-lg font-bold ${textPrimary}`}>{t.orderDetails}</h2><p className="text-cyan-400 font-mono">{selectedOrder.id}</p></div><button onClick={() => setSelectedOrder(null)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="text-xs text-gray-400">{t.customer}</label><p className="font-medium">{lang === "ar" ? selectedOrder.customer : selectedOrder.customerEn}</p></div>
-                <div><label className="text-xs text-gray-400">{t.location}</label><p className="font-medium text-sm">{lang === "ar" ? selectedOrder.location : selectedOrder.locationEn}</p></div>
-                <div><label className="text-xs text-gray-400">{t.priority}</label><div className="mt-1"><PriorityBadge priority={selectedOrder.priority} t={t} /></div></div>
-                <div><label className="text-xs text-gray-400">{t.status}</label><div className="mt-1"><StatusBadge status={selectedOrder.status} t={t} /></div></div>
-                <div><label className="text-xs text-gray-400">{t.assignedTo}</label><p className="font-medium">{getTechName(selectedOrder.tech)}</p></div>
-                <div><label className="text-xs text-gray-400">{t.date}</label><p className="font-medium">{selectedOrder.date}</p></div>
-              </div>
-              <div><label className="text-xs text-gray-400">{t.description}</label><p className="text-sm mt-1 text-gray-700 bg-gray-50 p-3 rounded-lg">{lang === "ar" ? selectedOrder.desc : selectedOrder.descEn}</p></div>
-              <div className="flex gap-2 pt-2">
-                <button className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700">{t.edit}</button>
-                <button onClick={() => setSelectedOrder(null)} className="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.close}</button>
-              </div>
+              <div className="grid grid-cols-2 gap-4"><div><label className={`text-xs ${textSecondary}`}>{t.customer}</label><p className={`font-semibold ${textPrimary}`}>{lang === "ar" ? selectedOrder.customer : selectedOrder.customerEn}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.location}</label><p className={`font-semibold text-sm ${textPrimary}`}>{lang === "ar" ? selectedOrder.location : selectedOrder.locationEn}</p></div><div><label className={`text-xs ${textSecondary}`}>{t.priority}</label><div className="mt-1"><PriorityBadge priority={selectedOrder.priority} t={t} theme={theme} /></div></div><div><label className={`text-xs ${textSecondary}`}>{t.status}</label><div className="mt-1"><StatusBadge status={selectedOrder.status} t={t} theme={theme} /></div></div></div>
+              <div><label className={`text-xs ${textSecondary}`}>{t.description}</label><p className={`text-sm mt-1 ${isDark ? "bg-gray-900/50" : "bg-gray-50"} p-3 rounded-xl ${textPrimary}`}>{lang === "ar" ? selectedOrder.desc : selectedOrder.descEn}</p></div>
+              <button onClick={() => setSelectedOrder(null)} className={`w-full border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.close}</button>
             </div>
           </div>
         </div>
       )}
-      
       {showNewOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4" onClick={() => setShowNewOrder(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold">{t.createWorkOrder}</h2>
-              <button onClick={() => setShowNewOrder(false)} className="p-2 rounded-lg hover:bg-gray-100"><X size={20} /></button>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowNewOrder(false)}>
+          <div className={`${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} rounded-2xl w-full max-w-lg shadow-2xl border`} onClick={(e) => e.stopPropagation()}>
+            <div className={`p-6 border-b ${isDark ? "border-gray-700" : "border-gray-200"} flex items-center justify-between`}><h2 className={`text-lg font-bold ${textPrimary}`}>{t.createWorkOrder}</h2><button onClick={() => setShowNewOrder(false)} className={`p-2 rounded-xl ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}><X size={20} className={textPrimary} /></button></div>
             <div className="p-6 space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.customer}</label>
-                <input value={newCust} onChange={(e) => setNewCust(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.location}</label>
-                <input value={newLoc} onChange={(e) => setNewLoc(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.type}</label>
-                  <select value={newType} onChange={(e) => setNewType(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-                    <option value="maintenance">{t.maintenance}</option>
-                    <option value="repair">{t.repair}</option>
-                    <option value="installation">{t.installation}</option>
-                    <option value="inspection">{t.inspection}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">{t.priority}</label>
-                  <select value={newPrio} onChange={(e) => setNewPrio(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-                    <option value="low">{t.low}</option>
-                    <option value="medium">{t.medium}</option>
-                    <option value="high">{t.high}</option>
-                    <option value="urgent">{t.urgent}</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">{t.description}</label>
-                <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} rows={3} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button onClick={handleCreateOrder} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700">{t.submit}</button>
-                <button onClick={() => setShowNewOrder(false)} className="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">{t.cancel}</button>
-              </div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.customer}</label><input value={newCust} onChange={(e) => setNewCust(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.location}</label><input value={newLoc} onChange={(e) => setNewLoc(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`} /></div>
+              <div className="grid grid-cols-2 gap-3"><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.type}</label><select value={newType} onChange={(e) => setNewType(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="installation">{t.installation}</option><option value="maintenance">{t.maintenance}</option><option value="repair">{t.repair}</option><option value="inspection">{t.inspection}</option></select></div><div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.priority}</label><select value={newPrio} onChange={(e) => setNewPrio(e.target.value)} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}><option value="low">{t.low}</option><option value="medium">{t.medium}</option><option value="high">{t.high}</option><option value="urgent">{t.urgent}</option></select></div></div>
+              <div><label className={`text-sm font-medium ${textSecondary} block mb-2`}>{t.description}</label><textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} rows={3} className={`w-full ${inputBg} border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500`}></textarea></div>
+              <div className="flex gap-3"><button onClick={handleCreateOrder} className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-2.5 rounded-xl font-semibold">{t.submit}</button><button onClick={() => setShowNewOrder(false)} className={`flex-1 border ${isDark ? "border-gray-700" : "border-gray-200"} py-2.5 rounded-xl font-medium ${textPrimary}`}>{t.cancel}</button></div>
             </div>
           </div>
         </div>
@@ -1299,238 +933,115 @@ export default function App() {
     </div>
   );
 
-  const renderTechnicians = () => {
-    const availCount = sampleTechnicians.filter(tc => tc.status === "available").length;
-    const onJobCount = sampleTechnicians.filter(tc => tc.status === "onJob").length;
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t.technicians}</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard icon={Users} label={t.totalTechnicians} value={sampleTechnicians.length} color="bg-blue-600" />
-          <StatCard icon={CheckCircle} label={t.available} value={availCount} color="bg-green-600" />
-          <StatCard icon={Truck} label={t.onJob} value={onJobCount} color="bg-amber-500" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {sampleTechnicians.map((tech) => {
-            const statusLabel = tech.status === "available" ? t.available : tech.status === "onJob" ? t.onJob : t.offline;
-            const statusColor = tech.status === "available" ? "bg-green-500" : tech.status === "onJob" ? "bg-blue-500" : "bg-gray-400";
-            return (
-              <div key={tech.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-sm">{tech.avatar}</div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{lang === "ar" ? tech.name : tech.nameEn}</h3>
-                    <p className="text-sm text-gray-500">{lang === "ar" ? tech.spec : tech.specEn}</p>
-                  </div>
-                  <span className={`w-2.5 h-2.5 rounded-full ${statusColor}`}></span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 text-center pt-3 border-t border-gray-100">
-                  <div><p className="text-lg font-bold text-gray-900">{tech.jobs}</p><p className="text-xs text-gray-500">{t.jobsCompleted}</p></div>
-                  <div><p className="text-lg font-bold text-gray-900">{tech.rating}</p><p className="text-xs text-gray-500">{t.rating}</p></div>
-                  <div><p className="text-xs font-medium text-gray-700">{statusLabel}</p></div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <button className="flex-1 border border-gray-200 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-1">
-                    <Phone size={14} />{isRTL ? "اتصال" : "Call"}
-                  </button>
-                  <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center justify-center gap-1">
-                    <ClipboardList size={14} />{isRTL ? "تعيين" : "Assign"}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+  const renderAnalytics = () => (
+    <div className="space-y-6">
+      <h1 className={`text-3xl font-bold ${textPrimary}`}>{t.analytics}</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <StatCard icon={ClipboardList} label={t.totalOrders} value={statsTotal} change={12} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={CheckCircle} label={t.completed} value={statsCompleted} change={8} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={Ticket} label={t.openTickets} value={openTicketsCount} change={-5} color="bg-gradient-to-br from-orange-500 to-red-500" theme={theme} glow="orange" />
+        <StatCard icon={Users} label={t.technicians} value={sampleTechnicians.length} color="bg-gradient-to-br from-purple-500 to-indigo-600" theme={theme} glow="cyan" />
       </div>
-    );
-  };
-
-  const renderReports = () => {
-    const pendingCount = orders.filter(o => o.status === "pending").length;
-    const inProgCount = orders.filter(o => o.status === "inProgress").length;
-    const compCount = orders.filter(o => o.status === "completed").length;
-    const total = pendingCount + inProgCount + compCount || 1;
-    const sortedTechs = [...sampleTechnicians].sort((a, b) => b.rating - a.rating).slice(0, 3);
-
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t.reports}</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-gray-800 mb-4">{isRTL ? "توزيع الحالات" : "Status Distribution"}</h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1"><span className="text-gray-600">{t.pending}</span><span className="font-medium">{pendingCount}</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-3"><div className="h-3 rounded-full bg-yellow-500" style={{ width: `${Math.round((pendingCount / total) * 100)}%` }}></div></div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1"><span className="text-gray-600">{t.inProgress}</span><span className="font-medium">{inProgCount}</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-3"><div className="h-3 rounded-full bg-blue-500" style={{ width: `${Math.round((inProgCount / total) * 100)}%` }}></div></div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1"><span className="text-gray-600">{t.completed}</span><span className="font-medium">{compCount}</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-3"><div className="h-3 rounded-full bg-green-500" style={{ width: `${Math.round((compCount / total) * 100)}%` }}></div></div>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.weeklyOverview}</h3>
-            <MiniBarChart data={weekData} color="bg-green-500" />
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.topTechnicians}</h3>
-            <div className="space-y-3">
-              {sortedTechs.map((tech, i) => {
-                const badgeColor = i === 0 ? "bg-yellow-500" : i === 1 ? "bg-gray-400" : "bg-amber-600";
-                return (
-                  <div key={tech.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${badgeColor}`}>{i + 1}</span>
-                    <div className="flex-1"><p className="font-medium text-sm">{lang === "ar" ? tech.name : tech.nameEn}</p><p className="text-xs text-gray-500">{tech.jobs} {t.jobsCompleted}</p></div>
-                    <div className="flex items-center gap-1"><Star size={14} className="text-yellow-500" style={{ fill: "#eab308" }} /><span className="font-medium text-sm">{tech.rating}</span></div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.customerSatisfaction}</h3>
-            <div className="text-center py-6">
-              <p className="text-5xl font-bold text-green-600">4.7</p>
-              <div className="flex items-center justify-center gap-1 mt-2">
-                {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={20} className="text-yellow-500" style={{ fill: s <= 4 ? "#eab308" : "#fef08a" }} />)}
-              </div>
-              <p className="text-sm text-gray-500 mt-2">{isRTL ? "بناءً على 847 تقييم" : "Based on 847 reviews"}</p>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="cyan"><h3 className={`font-bold ${textPrimary} mb-6`}>{t.weeklyOverview}</h3><MiniBarChart data={weekData} color="bg-gradient-to-t from-cyan-600 to-cyan-400" theme={theme} /></GlowingCard>
+        <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="green"><h3 className={`font-bold ${textPrimary} mb-6`}>{t.customerSatisfaction}</h3><div className="flex justify-center"><CircularProgress value={94} color="#10B981" /></div><p className={`text-center ${textSecondary} text-sm mt-4`}>{isRTL ? "ممتاز" : "Excellent"}</p></GlowingCard>
       </div>
-    );
-  };
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="cyan">
+        <h3 className={`font-bold ${textPrimary} mb-4`}>{t.topTechnicians}</h3>
+        <div className="space-y-3">
+          {sampleTechnicians.sort((a, b) => b.rating - a.rating).slice(0, 3).map((tech, i) => (
+            <div key={tech.id} className={`flex items-center gap-4 p-3 ${isDark ? "bg-gray-900/50" : "bg-gray-50"} rounded-xl`}>
+              <span className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${i === 0 ? "bg-yellow-500" : i === 1 ? "bg-gray-400" : "bg-amber-600"}`}>{i + 1}</span>
+              <div className="flex-1"><p className={`font-medium ${textPrimary}`}>{lang === "ar" ? tech.name : tech.nameEn}</p><p className={`text-xs ${textSecondary}`}>{tech.jobs} {t.jobsCompleted}</p></div>
+              <div className="flex items-center gap-1"><Star size={16} className="text-yellow-400" /><span className={`font-semibold ${textPrimary}`}>{tech.rating}</span></div>
+            </div>
+          ))}
+        </div>
+      </GlowingCard>
+    </div>
+  );
 
   const renderSettings = () => (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">{t.settings}</h1>
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-6">
-        <div className="flex items-center justify-between py-3 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <Globe size={20} className="text-gray-500" />
-            <div><p className="font-medium">{t.language}</p><p className="text-sm text-gray-500">{lang === "ar" ? "العربية" : "English"}</p></div>
-          </div>
-          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">
-            {lang === "ar" ? "English" : "العربية"}
-          </button>
+      <h1 className={`text-3xl font-bold ${textPrimary}`}>{t.settings}</h1>
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6 space-y-6`} glow="cyan">
+        <div className={`flex items-center justify-between py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+          <div className="flex items-center gap-3"><Globe size={20} className={textSecondary} /><div><p className={`font-medium ${textPrimary}`}>{t.language}</p><p className={`text-sm ${textSecondary}`}>{lang === "ar" ? "العربية" : "English"}</p></div></div>
+          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className={`px-4 py-2 border ${isDark ? "border-gray-700 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-50"} rounded-xl text-sm ${textPrimary}`}>{lang === "ar" ? "English" : "العربية"}</button>
         </div>
-        <div className="flex items-center justify-between py-3 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <Bell size={20} className="text-gray-500" />
-            <div><p className="font-medium">{t.notifications}</p><p className="text-sm text-gray-500">{isRTL ? "إدارة تنبيهات الإشعارات" : "Manage notification alerts"}</p></div>
-          </div>
-          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">{isRTL ? "تعديل" : "Configure"}</button>
+        <div className={`flex items-center justify-between py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+          <div className="flex items-center gap-3">{isDark ? <Moon size={20} className={textSecondary} /> : <Sun size={20} className={textSecondary} />}<div><p className={`font-medium ${textPrimary}`}>{isDark ? t.darkMode : t.lightMode}</p><p className={`text-sm ${textSecondary}`}>{isDark ? (isRTL ? "مفعّل" : "Enabled") : (isRTL ? "معطّل" : "Disabled")}</p></div></div>
+          <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className={`px-4 py-2 border ${isDark ? "border-gray-700 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-50"} rounded-xl text-sm ${textPrimary}`}>{isDark ? t.lightMode : t.darkMode}</button>
         </div>
-        <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-3">
-            <User size={20} className="text-gray-500" />
-            <div><p className="font-medium">{t.profile}</p><p className="text-sm text-gray-500">{lang === "ar" ? currentUser?.name : currentUser?.nameEn}</p></div>
-          </div>
-          <button className="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50">{t.edit}</button>
+        <div className="flex items-center justify-between py-4">
+          <div className="flex items-center gap-3"><User size={20} className={textSecondary} /><div><p className={`font-medium ${textPrimary}`}>{t.profile}</p><p className={`text-sm ${textSecondary}`}>{lang === "ar" ? currentUser?.name : currentUser?.nameEn}</p></div></div>
+          <button className={`px-4 py-2 border ${isDark ? "border-gray-700 hover:bg-gray-700" : "border-gray-200 hover:bg-gray-50"} rounded-xl text-sm ${textPrimary}`}>{t.edit}</button>
         </div>
-      </div>
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 className="font-semibold text-gray-800 mb-4">{t.systemHealth}</h3>
+      </GlowingCard>
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="green">
+        <h3 className={`font-bold ${textPrimary} mb-4`}>{t.systemHealth}</h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-green-50 rounded-lg p-4 text-center"><p className="text-2xl font-bold text-green-700">99.9%</p><p className="text-sm text-green-600">{t.uptime}</p></div>
-          <div className="bg-blue-50 rounded-lg p-4 text-center"><p className="text-2xl font-bold text-blue-700">24</p><p className="text-sm text-blue-600">{t.activeUsers}</p></div>
+          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center"><p className="text-2xl font-bold text-emerald-400">99.9%</p><p className="text-sm text-emerald-400/70">{t.uptime}</p></div>
+          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 text-center"><p className="text-2xl font-bold text-cyan-400">24</p><p className="text-sm text-cyan-400/70">{t.activeUsers}</p></div>
         </div>
-      </div>
+      </GlowingCard>
     </div>
   );
 
   const renderAdminPanel = () => (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">{t.adminPanel}</h1>
+      <h1 className={`text-3xl font-bold ${textPrimary}`}>{t.adminPanel}</h1>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <StatCard icon={Users} label={t.users} value={users.length} color="bg-blue-600" />
-        <StatCard icon={ClipboardList} label={t.totalOrders} value={orders.length} color="bg-green-600" />
-        <StatCard icon={Ticket} label={t.totalTickets} value={tickets.length} color="bg-orange-500" />
-        <StatCard icon={CalendarDays} label={t.totalAppointments} value={appointments.length} color="bg-purple-600" />
+        <StatCard icon={Users} label={t.users} value={users.length} color="bg-gradient-to-br from-cyan-500 to-blue-600" theme={theme} glow="cyan" />
+        <StatCard icon={ClipboardList} label={t.totalOrders} value={orders.length} color="bg-gradient-to-br from-emerald-500 to-green-600" theme={theme} glow="green" />
+        <StatCard icon={Ticket} label={t.totalTickets} value={tickets.length} color="bg-gradient-to-br from-orange-500 to-red-500" theme={theme} glow="orange" />
+        <StatCard icon={CalendarDays} label={t.totalAppointments} value={appointments.length} color="bg-gradient-to-br from-purple-500 to-indigo-600" theme={theme} glow="cyan" />
       </div>
-      
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800">{t.manageUsers}</h3>
-        </div>
+      <GlowingCard className={`${cardBg} border backdrop-blur-sm p-6`} glow="cyan">
+        <h3 className={`font-bold ${textPrimary} mb-4`}>{t.manageUsers}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr className="text-gray-500">
-                <th className="text-start p-3 font-medium">ID</th>
-                <th className="text-start p-3 font-medium">{t.fullName}</th>
-                <th className="text-start p-3 font-medium">{t.email}</th>
-                <th className="text-start p-3 font-medium">{t.role}</th>
-                <th className="text-start p-3 font-medium">{t.actions}</th>
-              </tr>
-            </thead>
+            <thead className={isDark ? "bg-gray-900/50" : "bg-gray-50"}><tr className={textSecondary}><th className="text-start p-3 font-semibold">ID</th><th className="text-start p-3 font-semibold">{t.fullName}</th><th className="text-start p-3 font-semibold">{t.email}</th><th className="text-start p-3 font-semibold">{t.role}</th><th className="text-start p-3 font-semibold">{t.actions}</th></tr></thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-gray-50">
-                  <td className="p-3">{u.id}</td>
-                  <td className="p-3">{lang === "ar" ? u.name : u.nameEn}</td>
-                  <td className="p-3 text-gray-500">{u.email}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === "admin" ? "bg-red-100 text-red-700" : u.role === "technician" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}>
-                      {t[u.role] || u.role}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <button className="p-1.5 rounded hover:bg-gray-100 text-gray-500"><Edit size={16} /></button>
-                  </td>
+                <tr key={u.id} className={`border-t ${isDark ? "border-gray-800" : "border-gray-100"}`}>
+                  <td className={`p-3 ${textPrimary}`}>{u.id}</td>
+                  <td className={`p-3 ${textPrimary}`}>{lang === "ar" ? u.name : u.nameEn}</td>
+                  <td className={`p-3 ${textSecondary}`}>{u.email}</td>
+                  <td className="p-3"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${u.role === "admin" ? "bg-red-500/20 text-red-400" : u.role === "technician" ? "bg-cyan-500/20 text-cyan-400" : "bg-gray-500/20 text-gray-400"}`}>{t[u.role] || u.role}</span></td>
+                  <td className="p-3"><button className={`p-1.5 rounded-lg ${isDark ? "hover:bg-gray-700 text-gray-400" : "hover:bg-gray-100 text-gray-500"}`}><Edit size={16} /></button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-  );
-
-  const renderPlaceholder = (title) => (
-    <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-      <Layers size={64} className="mb-4 opacity-30" />
-      <h2 className="text-xl font-semibold text-gray-600">{title}</h2>
-      <p className="text-sm mt-2">{isRTL ? "هذه الصفحة قيد التطوير" : "This page is under development"}</p>
+      </GlowingCard>
     </div>
   );
 
   const renderPage = () => {
-    if (page === "dashboard") return renderDashboard();
-    if (page === "workOrders") return renderWorkOrders();
-    if (page === "tickets") return renderTickets();
-    if (page === "appointments") return renderAppointments();
-    if (page === "technicians") return renderTechnicians();
-    if (page === "reports") return renderReports();
-    if (page === "settings") return renderSettings();
-    if (page === "adminPanel" && currentUser?.role === "admin") return renderAdminPanel();
-    return renderPlaceholder(t[page] || page);
+    switch(page) {
+      case "dashboard": return renderDashboard();
+      case "fleet": return renderFleet();
+      case "workOrders": return renderWorkOrders();
+      case "tickets": return renderTickets();
+      case "appointments": return renderAppointments();
+      case "technicians": return renderTechnicians();
+      case "analytics": return renderAnalytics();
+      case "settings": return renderSettings();
+      case "adminPanel": return currentUser?.role === "admin" ? renderAdminPanel() : renderDashboard();
+      default: return renderDashboard();
+    }
   };
 
-  if (!isLoggedIn) {
-    if (page === "register") return renderRegister();
-    return renderLogin();
-  }
+  if (!isLoggedIn) { if (page === "register") return renderRegister(); return renderLogin(); }
 
   return (
-    <div dir={dir} className="flex h-screen bg-gray-50 overflow-hidden">
+    <div dir={dir} className={`flex h-screen ${bgClass} overflow-hidden transition-colors duration-300`}>
+      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } .animate-fadeIn { animation: fadeIn 0.5s ease-out; }`}</style>
       <div className="hidden lg:block">{renderSidebar()}</div>
-      {showMobileMenu && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-30" onClick={() => setShowMobileMenu(false)}></div>
-          <div className="relative z-50">{renderSidebar()}</div>
-        </div>
-      )}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {renderHeader()}
-        <main className="flex-1 overflow-y-auto p-6">{renderPage()}</main>
-      </div>
+      {showMobileMenu && (<div className="fixed inset-0 z-40 lg:hidden"><div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)}></div><div className="relative z-50">{renderSidebar()}</div></div>)}
+      <div className="flex-1 flex flex-col overflow-hidden">{renderHeader()}<main className="flex-1 overflow-y-auto p-6">{renderPage()}</main></div>
     </div>
   );
 }
