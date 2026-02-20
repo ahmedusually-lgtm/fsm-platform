@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Ahmed Mohammed",
+    "nameEn": "Ahmed Mohammed",
+    "status": "available",
+    "rating": 4.8,
+    "jobs": 156,
+    "spec": "Camera Installation",
+    "specEn": "Camera Installation",
+    "phone": "0501234567",
+    "avatar": "AM"
+  },
+  {
+    "id": 2,
+    "name": "Khalid Al\u2011Omari",
+    "nameEn": "Khalid Al-Omari",
+    "status": "onJob",
+    "rating": 4.6,
+    "jobs": 132,
+    "spec": "GPS Maintenance",
+    "specEn": "GPS Maintenance",
+    "phone": "0507654321",
+    "avatar": "KA"
+  },
+  {
+    "id": 3,
+    "name": "Saad Al\u2011Harbi",
+    "nameEn": "Saad Al-Harbi",
+    "status": "available",
+    "rating": 4.9,
+    "jobs": 189,
+    "spec": "Tracking Systems",
+    "specEn": "Tracking Systems",
+    "phone": "0509876543",
+    "avatar": "SH"
+  }
+]

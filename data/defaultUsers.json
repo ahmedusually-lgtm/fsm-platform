@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "email": "admin@rooya.ai",
+    "password": "admin123",
+    "name": "System Admin",
+    "nameEn": "System Admin",
+    "role": "admin",
+    "active": true
+  },
+  {
+    "id": 2,
+    "email": "user@rooya.ai",
+    "password": "user123",
+    "name": "Mohammed Ahmed",
+    "nameEn": "Mohammed Ahmed",
+    "role": "user",
+    "active": true
+  },
+  {
+    "id": 3,
+    "email": "tech@rooya.ai",
+    "password": "tech123",
+    "name": "Khalid Al-Omari",
+    "nameEn": "Khalid Al-Omari",
+    "role": "technician",
+    "active": true
+  }
+]
